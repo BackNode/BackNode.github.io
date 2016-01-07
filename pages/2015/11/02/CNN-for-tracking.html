@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html" rel="bookmark"
+           title="Permalink to 论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》">论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-02</span>
+<span>| tags: <a href="http://backnode.github.io/tag/visual-tracking.html">visual tracking</a><a href="http://backnode.github.io/tag/cnn.html">CNN</a></span>
+</footer><!-- /.post-info -->      <h1>0. 摘要</h1>
+<hr />
+<p>基于CNN的一个跟踪算法，达到了state-of-art水平，意味着深度学习又占领了一个山头。本文中使用的网络由共享层（shared layers)和许多特定目标分支层组成。每一个分支层对应一个二分类的任务：确定输入样本是不是该分支对应的跟踪目标。当在一个新的图像序列中跟踪一个目标时，用一个新的二分类层连接共享层，作为新的跟踪网络，并实时在线微调。这个网络取名MDNet，具体细节看下文。</p>
+<h1>1. Multi-Domain Network (MDNet)</h1>
+<hr />
+<h2>1.1 网络结构</h2>
+<p>相比于AlexNet和VGG-Nets，作者使用了一个相对较小的网络来做跟踪，并解释了理由：</p>
+<ol>
+<li>
+<p>跟踪问题本质上只是个二分类的任务，对模型复杂度要求相对更低。</p>
+</li>
+<li>
+<p>随着网络越来越深，空间信息越来越稀释，所以：对于图像中精准的目标定位，CNN并不是那么有效。</p>
+</li>
+<li>
+<p>在跟踪任务中通常目标较小，所以输入大小（input size）也就小，网络结构自然也就更浅。</p>
+</li>
+<li>
+<p>跟踪通常是一个实时任务，小网络显然更有效率。</p>
+</li>
+</ol>
+<p>下图即MDNet网络结构，由共享层和K个特定目标分支层组成，黄色和蓝色的bounding boxes分别对应每个特定分支层的正样本和负样本。</p>
+<p><img alt="MDNet" src="http://7nio4l.com1.z0.glb.clouddn.com/MDNet-arch.jpg" /></p>
+<h2>1.2 Learning Algorithm</h2>
+<p>SGD迭代，每一次迭代中只涉及一个特定类别。在第i次迭代中，mini-batch中只包含来自第（i mod K）个序列的样本，特定目标分支网络中也只激活第（i mod K）个分支。</p>
+<p>通过这个学习过程，类别无关的信息就被学习到并保存在共享层中，这些信息是非常有用的泛化特征表示。</p>
+<h1>2. Online Tracking using MDNet</h1>
+<hr />
+<p>完成上述训练过程之后，在测试阶段中用一个新的分支层代替训练阶段的K个分支层连接共享层。测试的时候实时微调共享层和分支层。</p>
+<h2>2.1 Tracking Control and Network Update</h2>
+<p>为了兼顾跟踪的鲁棒性和自适应性，采用两种策略更新模型参数：long-term和short-term。</p>
+<p>long-term策略：定期微调，使用一段时间内收集到的正样本。</p>
+<p>short-term策略：当检测到可能有跟踪失败的情况时执行，使用短期内收集到的正样本。</p>
+<p>两种策略中都使用短期内检测到的新鲜负样本，因为旧的负样本对于当前帧通常是多余、不相关的。
+为了确定每一帧中目标的状态，在上一帧目标的位置附近sample N个候选目标，用网络模型对这N个候选目标估计，取得分最高的为最佳目标。</p>
+<h2>2.2 Hard Minibatch Mining</h2>
+<p>在训练阶段的每一次迭代中，一个mini-batch包含n个正样本和p个困难负样本。如何选择困难负样本？用模型测试M（M &gt;&gt; p）个负样本，取top p个困难负样本。</p>
+<h2>2.3 Bounding Box Regression</h2>
+<p>根据给定的第一帧，训练一个线性回归模型（使用目标附近的样本的conv3特征）。在接下来的序列帧中，使用训练好的回归模型在估计好的可靠的候选目标中调整目标位置。</p>
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html" data-title="论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》" data-url="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

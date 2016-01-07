@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - ML</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/12/22/SVM-dual.html">机器学习算法之支持向量机SVM：原始问题与对偶问题</a></h1>
+<footer class="post-info">
+        <span>2015-12-22</span>
+<span>| tags: <a href="http://backnode.github.io/tag/svm.html">SVM</a><a href="http://backnode.github.io/tag/support-vector-machine.html">support vector machine</a><a href="http://backnode.github.io/tag/dual.html">dual</a></span>
+</footer><!-- /.post-info --><h1>0. 最大间隔分离超平面（Large-Margin Separating Hyperplane）</h1>
+<hr />
+<p>考虑一个线性可分数据上的二分类问题，如果用最基本的线性分类器去拟合训练数据，那么产生的结果将不唯一，如下图所示：</p>
+<p><center><img alt="linear" src="http://7nio4l.com1.z0.glb.clouddn.com/linear_classify.jpg" /></center></p>
+<p>上图中三条线都将训练样本完全分类正确了，但是显然最右边那条是我们更想得到的，因为：<strong>最近的一个训练样本$x$距离分类超平面更远</strong>。这就意味着</p>
+<ol>
+<li>
+<p>这个分类超平面可以容忍更多噪声</p>
+</li>
+<li>
+<p>这个超平面更不容易过拟合</p>
+</li>
+</ol>
+<p><center><img alt="fat" src="http://7nio4l.com1.z0.glb.clouddn.com/fat-linear.jpg" /></center></p>
+<p>所以我们的目标是要找到最粗的分类超平面，即令最近所有训练样本$x_i$到分类超平面的最小距离最大，此外这个超平面还要能正确划分所有训练样本。</p>
+<p>$$max:margin(w)；subject：correctness$$</p>
+<p>其中：</p>
+<p>$correctness：y_n = sign(w^Tx_n)$， 即 $every \quad y_nw^Tx_n&gt;0$</p>
+<p>$margin(w) = min_{n=1,...,N} \, distance(x_n, w)$</p>
+<h1>1. Standard Large-Margin SVM</h1>
+<hr />
+<p>对于给定的训练数据集和超平面，定义超平面$(w, b)$关于样本点$(x_i, y_i)$的<strong>函数间隔</strong>为：</p>
+<p>$$distance(x_i,b,w,)=y_i(w^Tx_i+b)$$</p>
+<p>函数间隔可以表示分类预测的正确性以及确信度，但是选择分离超平面时，只有函数间隔还不够，因为只要成比例地改变$w$和$b$，例如将它们改为$2w$和$2b$，超平面并没有改变，但是函数间隔却成为原来的2倍。如果不对$w$加以约束，最终优化得到的超平面会趋向于带有很小的$w$，而不是真正的最大间隔超平面。所以对$w$进行规范化，如$||w||=1$，这时函数间隔成为几何间隔。</p>
+<p>对于给定的训练数据集和超平面，定义超平面$(w, b)$关于样本点$(x_i, y_i)$的<strong>几何间隔</strong>为：</p>
+<p>$$distance(x_i,b,w,)=\frac{1}{||w||}y_i(w^Tx_i+b)$$</p>
+<p>于是问题就变成了：</p>
+<p>$$\binom{\underset{b,w}{max}\quad margin(b,w)}{sb.\quad every\quad y_n(w^Tx_n+b)&gt;0,\quad margin(b,w)=\underset{n=1,...,N}{min}\frac{1}{\left \| w \right \|}y_n(w^Tx_n+b)}$$</p>
+<p>考虑到缩放对超平面没有影响，为了进一步化简上述公式，进行一次特殊的缩放：令$min_{n=1,...,N}y_n(w^Tx_n+b)=1$，于是$margin(b,w)=\frac{1}{||w||}$.上述公式便成了：</p>
+<p>$$\binom{\underset{b,w}{max}\quad \frac{1}{||w||}}{sb.\quad every\quad y_n(w^Tx_n+b)&gt;0,\quad \underset{n=1,...,N}{min}y_n(w^Tx_n+b)=1}$$</p>
+<p>其中两个约束条件可以合并为一个，$max\frac{1}{||w||}$可以换成$min\frac{1}{2}w^Tw$</p>
+<p>$$\binom{\underset{b,w}{min}\quad \frac{1}{2}w^Tw}{sb.\quad every\quad y_n(w^Tx_n+b)&gt;=1\quad for\quad all\quad n }$$</p>
+<p>这是一个凸二次规划(convex quadratic programming)问题，通用的QP solver都可以解决这个问题。</p>
+<h1>2. Dual Support Vector Machine</h1>
+<hr />
+<p>如果从凸二次规划角度来解决上述问题，那么问题的复杂度会跟样本个数和特征维度相关，如果特征维度特别大甚至无限大呢？那么从凸二次规划角度解这个问题效率就会非常低，我们需要把问题转化一下，使解决复杂度仅与样本个数相关。由此引入<em>拉格朗日对偶性</em>，将原始问题转换为对偶问题。首先构建拉格朗日函数，为此，对每一个不等式约束引进拉格朗日乘子$\alpha_{i}$，定义拉格朗日函数如下：</p>
+<p>$$L(b, w, \alpha) = \frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}(1-y_n(w^Tz_n+b))\qquad(2.1)$$</p>
+<p>根据拉格朗日对偶性，原始问题的对偶问题是极大极小问题：</p>
+<p>$$SVM\equiv \underset{b,w}{min}(\underset{all\,\alpha_n&gt;=0}{maxL(b,w,\alpha)})\qquad(2.2)$$</p>
+<p>对于给定的任意的$\alpha'$($\alpha'_n&gt;=0$):</p>
+<p>$$\underset{b,w}{min}(\underset{all\,\alpha_n&gt;=0}{maxL(b,w,\alpha)})&gt;=\underset{b,w}{min}L(b,w,\alpha')\qquad(2.3)$$</p>
+<p>因为$max&gt;=any$. 那么进一步：</p>
+<p>$$\underset{b,w}{min}(\underset{all\,\alpha_n&gt;=0}{maxL(b,w,\alpha)})&gt;=\underset{all\,\alpha'_n&gt;=0}{max}\underset{b,w}{min}L(b,w,\alpha')\qquad(2.4)$$</p>
+<p>有一个叫Slater's condition的东西告诉我们满足这个条件时原始问题具有强对偶性，此时可以把上述公式的'$&gt;$'去掉，即左右两边的解相等，因此我们的SVM问题变成了对如下问题的求解：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0}{max}\underset{b,w}{min}(\frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}(1-y_n(w^Tz_n+b)))\qquad(2.5)$$</p>
+<p>对于公式2.5内部的$min$问题，可先后使拉格朗日函数对$b,w$求导等于0进行化简：</p>
+<p>$$\frac{\partial L(b,w,,\alpha)}{\partial b}=0=-\sum_{n=1}^{N}\alpha_ny_n\qquad(2.6)$$</p>
+<p>$$\frac{\partial L(b,w,,\alpha)}{\partial w}=0=w_i-\sum_{n=1}^{N}\alpha_{n}y_nz_{n,i}\qquad(2.7)$$</p>
+<p>将公式2.6代入2.5化简去掉含$b$项：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0,\sum_{n=1}^{N}\alpha_ny_n=0}{max}\underset{b,w}{min}(\frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}(1-y_n(w^Tz_n)))\qquad(2.8)$$</p>
+<p>进一步根据公式2.7将$w=\sum_{n=1}^{N}\alpha_{n}y_nz_{n}$代入公式2.8，化简得：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0,\sum_{n=1}^{N}\alpha_ny_n=0,w=\sum_{n=1}^{N}\alpha_{n}y_nz_{n}}{max}\underset{b,w}{min}(\frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}-w^Tw)\qquad(2.9)$$</p>
+<p>继续化简：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0,\sum_{n=1}^{N}\alpha_ny_n=0,w=\sum_{n=1}^{N}\alpha_{n}y_nz_{n}}{max} -\frac{1}{2}\left \| \sum_{n=1}^{N}a_ny_nz_n \right \|^2 + \sum_{n=1}^{N}\alpha_{n})\qquad(2.10)$$</p>
+<p>上述对偶问题（公式2.10）的解决复杂度已经如前面所说，与特征维度无关，并且可以用QP solver求解出对偶问题的解$\alpha^q$。解出$\alpha$之后对应的$w^q$,$b^q$自然也可求出：</p>
+<p>$$w^q = \sum_{n=1}^{N}\alpha_{n}y_nz_{n}\qquad b^q = y_j-\sum_{n=1}^{N}\alpha_iy_i(x_i*x_j)$$</p>
+<p>那么问题来了，对偶问题求出的解$w^q,b^q$是否就是原始问题的解呢？</p>
+<p>此时需要引入一个<em>KKT条件</em>（详情可自行google）：$\alpha^q$和$w^q$,$b^q$分别是对偶问题和原始问题的解的充分必要条件是$\alpha^q$和$w^q$,$b^q$满足KKT条件。所以最终求出的SVM的分类决策函数：
+0
+$$g_{svm}(x) = sign(w^T\Phi (x)+b)$$</p>
+<p>至此，我们就已经解出了SVM的对偶问题。我们把所有$\alpha_n&gt;0$的样本$(z_n,y_n)$叫做<strong>支持向量</strong>，下图中距离分类边界最近的三个用正方形框出的点即支持向量，$w,b$的值仅取决于支持向量。</p>
+<p><center><img alt="sv" src="http://7nio4l.com1.z0.glb.clouddn.com/svm-sv.jpg" /></center></p>
+<p>总结的说，将原始SVM问题转换为对偶问题可使问题复杂度不与特征维度大小相关，而转换后的对偶问题满足KKT条件，所以对偶问题的解也就是原始问题的解。</p>
+<h1>Reference</h1>
+<hr />
+<ol>
+<li>
+<p>《统计学习方法》，李航</p>
+</li>
+<li>
+<p>《机器学习技法》，林轩田</p>
+</li>
+</ol><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/11/11/spp-net.html" rel="bookmark"
+                           title="Permalink to 论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》">论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-11</span>
+<span>| tags: <a href="http://backnode.github.io/tag/cnn.html">CNN</a><a href="http://backnode.github.io/tag/spp.html">SPP</a></span>
+</footer><!-- /.post-info -->                <h1>0. 摘要</h1>
+<hr />
+<ol>
+<li>
+<p>现有的卷积神经网络要求输入图片为固定尺寸，也就是说做用CNN图像识别时要对输入图像进行尺寸归一化，这样做可能会影响识别准确率。</p>
+</li>
+<li>
+<p>在图像物体检测任务中，一般来说先需要对图像进行窗口扫描生成候选窗口，然后以窗口图像为输入逐个判断。这个过程中有很多重复计算：提取卷积特征（即全连接层之前的所有层）并不要求输入图像尺寸固定，所以单张图像实际上只需计算一遍卷积特征即可。</p>
+</li>
+</ol>
+<p>本文要介绍的SPP-net便解决了上述两个问题，并在2014年ImageNet的物体检测比赛中取得第二名，图像分类比赛中取得第三名。</p>
+<h1>1. DEEP NETWORKS WITH SPATIAL PYRAMID POOLING</h1>
+<hr />
+<h2>1.1 Convolutional Layers and Feature Maps</h2>
+<p>常规的DeepCNN都要求输入图像尺寸固定，这是因为在全连接层中要求输入固定长度的特征向量，而全连接层之前的卷积pooling层并不严格要求输入图像的尺寸固定。卷积pooling层的输出尺寸比例基本和输入图像的尺寸比例一致，这些输出就是所谓的特征图（feature map）。特征图不仅仅反映输入图像对特征响应的强度信息，还反映出空间位置信息，如图1所示，图(a)中箭头位置对应图(b)filter中响应最强烈位置，图(c)中的绿色矩形区域对图(b)的filter有强响应 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/11/11/spp-net.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/11/05/word2vec.html" rel="bookmark"
+                           title="Permalink to Python版Word2Vec 尝试">Python版Word2Vec 尝试</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-05</span>
+<span>| tags: <a href="http://backnode.github.io/tag/gensim.html">gensim</a><a href="http://backnode.github.io/tag/word2vec.html">Word2Vec</a></span>
+</footer><!-- /.post-info -->                <h1>0. 数据准备</h1>
+<hr />
+<p>首先从<a href="http://www.sogou.com/labs/dl/ca.html">搜狗全网新闻数据</a>下载训练数据集，解压后用以下命令生成文件列表保存于文件“sougouCA_list.csv”中：</p>
+<div class="highlight"><pre>find <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span> -name <span class="s2">&quot;*.txt&quot;</span> &gt; sougouCA_list.csv
+</pre></div>
+
+
+<p>然后准备了一个中文停用词文档，文件中包含有“的、其中、例如”等2000多个中文停用词，每行一个，文件名“all_stopword.txt”。</p>
+<h1>1. 训练模型</h1>
+<hr />
+<h2>1.1 读取停用词</h2>
+<p>从文档中读取所有停用词，存放于一个集合中，届时用于查询某单词是否属于停用词。</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_stopWords</span><span class="p">(</span><span class="n">stopWords_fn</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stopWords_fn</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">stopWords_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\t</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/11/05/word2vec.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html" rel="bookmark"
+                           title="Permalink to 论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》">论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-02</span>
+<span>| tags: <a href="http://backnode.github.io/tag/visual-tracking.html">visual tracking</a><a href="http://backnode.github.io/tag/cnn.html">CNN</a></span>
+</footer><!-- /.post-info -->                <h1>0. 摘要</h1>
+<hr />
+<p>基于CNN的一个跟踪算法，达到了state-of-art水平，意味着深度学习又占领了一个山头。本文中使用的网络由共享层（shared layers)和许多特定目标分支层组成。每一个分支层对应一个二分类的任务：确定输入样本是不是该分支对应的跟踪目标。当在一个新的图像序列中跟踪一个目标时，用一个新的二分类层连接共享层，作为新的跟踪网络，并实时在线微调。这个网络取名MDNet，具体细节看下文。</p>
+<h1>1. Multi-Domain Network (MDNet)</h1>
+<hr />
+<h2>1.1 网络结构</h2>
+<p>相比于AlexNet和VGG-Nets，作者使用了一个相对较小的网络来做跟踪，并解释了理由：</p>
+<ol>
+<li>
+<p>跟踪问题本质上只是个二分类的任务，对模型复杂度要求相对更低。</p>
+</li>
+<li>
+<p>随着网络越来越深，空间信息越来越稀释，所以：对于图像中精准的目标定位，CNN并不是那么有效。</p>
+</li>
+<li>
+<p>在跟踪任务中通常目标较小，所以输入大小（input size）也就小，网络结构自然也就更浅。</p>
+</li>
+<li>
+<p>跟踪通常是一个实时任务，小网络显然更有效率。</p>
+</li>
+</ol>
+<p>下图即MDNet网络结构，由共享层和K个特定目标分支层组成，黄色和蓝色的bounding boxes分别对应每个特定分支层的正样本和负样本。</p>
+<p><img alt="MDNet" src="http://7nio4l.com1.z0.glb.clouddn.com/MDNet-arch.jpg" /></p>
+<h2>1.2 Learning Algorithm ...</h2>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/09/25/AdaBoost-DTree.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之Adaptive Boosted Decision Tree">机器学习算法之Adaptive Boosted Decision Tree</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-09-25</span>
+<span>| tags: <a href="http://backnode.github.io/tag/adaboost.html">AdaBoost</a><a href="http://backnode.github.io/tag/decison-tree.html">decison tree</a></span>
+</footer><!-- /.post-info -->                <h1>0. 前言</h1>
+<hr />
+<p>先回忆一下， 在<a href="http://backnode.github.io/pages/2015/04/23/random-forest.html">随机森林</a>中， 用<code>bagging</code> + <code>decision tree</code>训练了一堆小决策树，然后用投票的方式将这些树组合起来形成随机森林：</p>
+<p><img alt="rf" src="http://7nio4l.com1.z0.glb.clouddn.com/rf.jpg" /></p>
+<p><strong>那么<code>AdaBoost</code>是否也可以与决策树结合呢？</strong></p>
+<h1>1. Weighted Decision Tree Algorithm</h1>
+<hr />
+<p>在<a href="http://backnode.github.io/pages/2015/04/30/decision-tree.html">决策树</a>中，对于输入数据是平等对待的，也就是说所有数据的权重是一样的。那么如果我们想要一个可以<strong>接受权重的决策树</strong>$DTree(\mathcal{D},u^{(t)})$，该怎么做呢？</p>
+<p>第一个方法就是修改决策树内部的<code>error function</code>，使每一个样本的error值乘上对应的权重：</p>
+<p><img alt="error" src="http://7nio4l.com1.z0.glb.clouddn.com/weightedDT-error.jpg" /></p>
+<p>但是这个方法要修改算法内部，更多的时候我们希望把决策树当成一个黑盒子。所以第二个方法就是在输入数据上动手脚：<strong>按照权重比例对数据进行采样</strong>。即权重更大的数据有更高的概率被采到。</p>
+<p><img alt="sampling" src="http://7nio4l.com1.z0.glb.clouddn.com/adaBoostDT-sampling.jpg" /></p>
+<h1>2. AdaBoost</h1>
+<hr />
+<p>简单的说AdaBoost是将一堆<code>estimators</code>线性组合起来，现在我们的<code>base estimator ...</code></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+                <a class="readmore" href="http://backnode.github.io/pages/2015/09/25/AdaBoost-DTree.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/09/25/GradientBoost-DTree.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之Gradient Boost Decision Tree">机器学习算法之Gradient Boost Decision Tree</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-09-25</span>
+<span>| tags: <a href="http://backnode.github.io/tag/gradientboost.html">GradientBoost</a><a href="http://backnode.github.io/tag/decison-tree.html">decison tree</a></span>
+</footer><!-- /.post-info -->                <h1>0. Gradient Boost</h1>
+<hr />
+<p>在梯度下降方法中，每一次迭代分两步：第一步先找一个好的梯度方向，第二步决定在这个方向上走多远。而在<code>Gradient Boosting</code>中，同样是经过N次迭代，每次先找一个好的函数方向，然后决定在这个函数方向上走多远，如下图中$h（x_n）$即要找的函数方向，$\eta$决定在这个方向上走多远。</p>
+<p><img alt="gb" src="http://7nio4l.com1.z0.glb.clouddn.com/gradientBoosting.jpg" /></p>
+<h1>1. 推导</h1>
+<hr />
+<p>假设我们要用<code>GradientBoost</code>做回归，去L2为error measure： </p>
+<p><img alt="regression" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-for-reg.jpg" /></p>
+<p>我们先看黄色部分的优化问题，经过泰勒展开一番推导：</p>
+<p><img alt="reduction" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-reduction.jpg" /></p>
+<p>我们得到了一个问题，求一个$h$使得上式后面那项越小越好。如果我们不对$h$的大小做限制，那么最终$h$会走向无穷大或无穷小：$h(x_n) = -\propto·(S_n-y_n)$。为了避免这样的情况我们给$h(x_n)$加一个限制：</p>
+<p><img alt="reg" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-for-reg2.jpg" /></p>
+<p>所以最终这个问题就演变成了:通过对<strong>余数 ...</strong></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+                <a class="readmore" href="http://backnode.github.io/pages/2015/09/25/GradientBoost-DTree.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/07/13/gender_classify.html" rel="bookmark"
+                           title="Permalink to 深度学习之训练一个人脸性别分类器">深度学习之训练一个人脸性别分类器</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-07-13</span>
+<span>| tags: <a href="http://backnode.github.io/tag/deeplearning.html">deepLearning</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a><a href="http://backnode.github.io/tag/gender-classify.html">gender classify</a><a href="http://backnode.github.io/tag/cnn.html">CNN</a></span>
+</footer><!-- /.post-info -->                <h1>0. Whatever</h1>
+<hr />
+<p>深度学习越来越火，人人都能玩！</p>
+<p>在本文中我将通过深度学习方法训练一个性别分类器，即给定一张人脸图像，判断其性别。</p>
+<p>本文使用的深度学习框架：基于<a href="http://deeplearning.net/software/theano/">Theano</a>的<a href="http://keras.io/">Keras</a>（github:<a href="https://github.com/fchollet/keras">keras</a>）</p>
+<h1>1. Data Preprocess</h1>
+<hr />
+<p>数据来源：互联网明星图片。男性照片25个类，共3690张；女性照片15个类，共4309张。所有图片经过<strong>人脸检测对齐归一化</strong>到141*165尺寸大小。样例如下：</p>
+<p><img alt="female-face" src="http://7nio4l.com1.z0.glb.clouddn.com/female-face.jpg" /></p>
+<p>生成图片路径和label文件格式如下：</p>
+<div class="highlight"><pre><span class="o">...</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38243</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38244</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/07/13/gender_classify.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/05/13/knn.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之K近邻（k nearest neighbors）">机器学习算法之K近邻（k nearest neighbors）</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-05-13</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/knn.html">knn</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a></span>
+</footer><!-- /.post-info -->                <h1>1. K近邻算法</h1>
+<p>什么是K近邻算法？简单的说就是：给定所有训练数据和一组测试数据之后，在训练数据中寻找离这组测试数据最近的K组邻居，根据这K组邻居的label来做voting/average，从而预测出测试数据的label。</p>
+<p><img alt="knn-sample" src="http://keepcodingblog.qiniudn.com/knn-sample.png" /></p>
+<p>如上图所示，绿色圆圈是测试数据，其余为训练数据。假设<code>K == 3</code>，即寻找离测试数据最近的三个邻居，如图中黑色实线圆中的三个邻居(两个红色三角形，一个蓝色正方形)。在这三个邻居中，少数服从多数，所以测试数据就被分类为红色三角形。假设<code>K == 5</code>，那虚线圆中的5个邻居就是离测试数据最近的5个邻居，里面有三个蓝色正方形和2个红色三角形，所以少数服从多数，测试数据被分类为蓝色正方形。</p>
+<h1>2. 距离度量</h1>
+<p>那么如何找到最近的K个邻居呢？换句话说，如何度量样本之间的距离？</p>
+<p>最常用的距离度量方式自然是<strong>欧式距离</strong>，类似的还有<strong>马氏距离</strong>。本质上来说，寻找最近的邻居无非就是寻找最相似的邻居，所以<strong>余弦相似度</strong>这类相似度度量方式也完全可以在此处使用。</p>
+<h1>3. Search algorithms</h1>
+<p>接下来介绍查找最近K个邻居的算法：Brute Force， K-D ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/05/13/knn.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/04/30/decision-tree.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之决策树（decision tree）">机器学习算法之决策树（decision tree）</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-04-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/decision-tree.html">decision tree</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a></span>
+</footer><!-- /.post-info -->                <h1>modeling</h1>
+<p>先简单地举一个例子，看看什么是决策树。以下是一棵分类树，决定下班后是否要观看机器学习公开课。</p>
+<p><img alt="DT" src="http://keepcodingblog.qiniudn.com/DT-1.jpg" /></p>
+<p>我们可以看到从根节点开始往下会有分支，最终会走向叶子节点，得到分类结果。每一个非叶子节点都是一个特征，上图中共有三维特征。决策树是所有机器算法中与人脑处理问题方式最接近的算法，所以很好理解。一棵决策树可以被抽象成以下数学公式：</p>
+<p><img alt="DTmodel" src="http://keepcodingblog.qiniudn.com/DTmodel.jpg" /></p>
+<p>T是路径总数/叶子节点总数（上图中有6个叶子节点），<code>g_t(x)</code>是<code>base hypothesis</code>，上图中是常量<code>Y/N</code>，<code>q_t(x)</code>可以理解成<code>g_t(x)</code>的权重，取值为1或0：</p>
+<div class="highlight"><pre><span class="n">is</span> <span class="n">x</span> <span class="n">on</span> <span class="n">path</span> <span class="n">t</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+</pre></div>
+
+
+<p>我们也可以用递归的视角来看决策树：</p>
+<p><img alt="recursiveDTmodel" src="http://keepcodingblog.qiniudn.com/RecursiveDTmodel.jpg" /></p>
+<p><code>G_c(x)</code>是当前节点的子树：</p>
+<div class="highlight"><pre><span class="n">tree</span> <span class="o">=</span> <span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">sub</span><span class="o">-</span><span class="n">trees</span><span class="p">)</span>
+</pre></div>
+
+
+<h1>构建一棵决策树</h1>
+<p>按照以下伪代码我们可以递归式地构建一棵决策树：</p>
+<div class="highlight"><pre><span class="n">function</span> <span class="nf">DecisionTree ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/04/30/decision-tree.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/04/23/random-forest.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之随机森林（Random Forest）">机器学习算法之随机森林（Random Forest）</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-04-23</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/random-forest.html">random forest</a><a href="http://backnode.github.io/tag/machine-leaning.html">machine leaning</a></span>
+</footer><!-- /.post-info -->                <h1>机器学习算法之随机森林（Random Forest）</h1>
+<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/04/23/random-forest.html">BackNode</a></p>
+<p>随机森林作为两大<code>ensemble methods</code>之一，近年来非常火热，本文试图探讨一下其背后原理，欢迎指正！</p>
+<h2>Bagging</h2>
+<p>Bagging方法是<code>ensemble methods</code>中获得用于训练<code>base estimator</code>的数据的重要一环。
+正如其名，<code>Bagging</code>方法就是将所有<code>training data</code>放进一个黑色的<code>bag</code>中，黑色意味着我们看不到里面的数据的详细情况，只知道里面有我们的数据集。然后从这个<code>bag</code>中随机抽一部分数据出来用于训练一个<code>base estimator</code>。抽到的数据用完之后我们有两种选择，放回或不放回。</p>
+<p>既然样本本身可以<code>bagging</code>，那么<code>feature</code>是不是也可以<code>bagging</code>呢？当然可以！<code>bagging</code>完数据本身之后我们可以再<code>bagging</code> <code>features</code>，即从所有特征维度里面随机选取部分特征用于训练 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/04/23/random-forest.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 2
+        <a href="http://backnode.github.io/category/ml2.html">&raquo;</a>
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

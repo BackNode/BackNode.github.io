@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - opencv</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li class="active"><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/04/02/csharp-cpp.html">C#调用C++类(内含OpenCV代码)</a></h1>
+<footer class="post-info">
+        <span>2015-04-02</span>
+<span>| tags: <a href="http://backnode.github.io/tag/opencv.html">opencv</a></span>
+</footer><!-- /.post-info --><h1>C#调用C++类(内含OpenCV代码)</h1>
+<p>C++工程通过托管代码生成dll供C#工程调用，即便C++工程中的类用到了其他依赖库也没关系。下例中C++工程用OpenCV读取图片并在窗口中显示，C#工程引用C++工程生成的dll，也可以做到读取图片并在窗口中显示。</p>
+<h2>C++工程</h2>
+<p>新建C++工程，配置中设置输出类型为<strong>动态库(.dll)</strong>,公共语言运行时支持设置为<strong>“公共语言运行支持(/clr)”</strong>。</p>
+<p>首先新建fatory类：
+factory.h</p>
+<div class="highlight"><pre><span class="cp">#ifndef FACTORY_H</span>
+<span class="cp">#define FACTORY_H</span>
+
+<span class="cp">#include &lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">cv</span><span class="p">;</span>
+<span class="k">class</span>  <span class="nc">factory</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">show</span><span class="p">();</span>
+<span class="p">};</span>
+<span class="cp">#endif</span>
+</pre></div>
+
+
+<p>factory.cpp</p>
+<div class="highlight"><pre><span class="cp">#include &quot;factory.h&quot;</span>
+<span class="cp">#include &lt;opencv2\opencv.hpp&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">cv</span><span class="p">;</span>
+<span class="kt">void</span> <span class="n">factory</span><span class="o">::</span><span class="n">show</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Mat</span> <span class="n">img</span> <span class="o">=</span> <span class="n">imread</span><span class="p">(</span><span class="s">&quot;1.jpg&quot;</span><span class="p">);</span>
+    <span class="n">imshow</span><span class="p">(</span><span class="s">&quot;src&quot;</span><span class="p">,</span><span class="n">img</span><span class="p">);</span>
+    <span class="n">waitKey</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>然后新建托管类clrClass：
+clrClass.h</p>
+<div class="highlight"><pre><span class="cp">#pragma once</span>
+<span class="cp">#include &quot;factory.h&quot;</span>
+<span class="k">public</span> <span class="n">ref</span> <span class="k">class</span> <span class="nc">clrClass</span>   <span class="c1">//一定记得加public ref</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">clrClass</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+    <span class="o">~</span><span class="n">clrClass</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">member</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="nf">showImage</span><span class="p">();</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">factory</span> <span class="o">*</span><span class="n">clrFac</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>clrClass.cpp</p>
+<div class="highlight"><pre><span class="cp">#include &quot;clrClass.h&quot;</span>
+<span class="cp">#include &quot;factory.h&quot;</span>
+<span class="n">clrClass</span><span class="o">::</span><span class="n">clrClass</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">clrFac</span> <span class="o">=</span> <span class="k">new</span> <span class="n">factory</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="n">clrClass</span><span class="o">::~</span><span class="n">clrClass</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">clrClass</span><span class="o">::</span><span class="n">showImage</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">clrFac</span><span class="o">-&gt;</span><span class="n">show</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>然后编译生成，在你的工程的debug/release目录下就会生成相应的dll文件。</p>
+<h2>C#工程</h2>
+<p>新建C#工程，在<strong>引用</strong>中添加刚刚生成的dll，在program.cs中添加如下代码：</p>
+<div class="highlight"><pre><span class="k">using</span> <span class="n">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">System</span><span class="p">.</span><span class="n">Collections</span><span class="p">.</span><span class="n">Generic</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">System</span><span class="p">.</span><span class="n">Linq</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">System</span><span class="p">.</span><span class="n">Threading</span><span class="p">.</span><span class="n">Tasks</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">System</span><span class="p">.</span><span class="n">Windows</span><span class="p">.</span><span class="n">Forms</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="n">refDll</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="k">class</span> <span class="nc">Program</span>
+    <span class="p">{</span>
+        <span class="c1">/// &lt;summary&gt;</span>
+        <span class="c1">/// 应用程序的主入口点。</span>
+        <span class="c1">/// &lt;/summary&gt;</span>
+        <span class="p">[</span><span class="n">STAThread</span><span class="p">]</span>
+        <span class="k">static</span> <span class="kt">void</span> <span class="n">Main</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="c1">//Application.EnableVisualStyles();</span>
+            <span class="c1">//Application.SetCompatibleTextRenderingDefault(false);</span>
+            <span class="c1">//Application.Run(new Form1());</span>
+            <span class="n">clrClass</span> <span class="n">clr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">clrClass</span><span class="p">();</span>  <span class="c1">//新建一个托管类对象</span>
+            <span class="n">clr</span><span class="p">.</span><span class="n">showImage</span><span class="p">();</span>  <span class="c1">//调用托管类函数</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>运行：</p>
+<p><img alt="clrShow" src="http://keepcodingblog.qiniudn.com/clrShow.jpg" /></p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2014/11/29/face-dectect.html" rel="bookmark"
+                           title="Permalink to opencv下HaarClassifierCascade的简单人脸检测">opencv下HaarClassifierCascade的简单人脸检测</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2014-11-29</span>
+<span>| tags: <a href="http://backnode.github.io/tag/ren-lian-jian-ce.html">人脸检测</a><a href="http://backnode.github.io/tag/opencv.html">OpenCV</a></span>
+</footer><!-- /.post-info -->                <h1>opencv下HaarClassifierCascade的简单人脸检测</h1>
+<p>接触Opencv一段时间了，最近导师一直让我看人脸识别相关的东西，看了这么多大牛写的人脸识别、追踪，一直没有自己动手写过，花了点时间写了一个简单的，单目标下能识别到人脸没问题，多目标下目前没测试，理论上应该可以（多目标识别已测试，识别成功）。</p>
+<p>haar classifier cascade是opencv下自带的人脸检测的级联分类器，支持haar特征，新版本的CascadeClassifier好像支持LBP特征，没试过。</p>
+<p>PS:要配置好opencv</p>
+<p>HaarDect.h</p>
+<div class="highlight"><pre><span class="cp">#ifndef HAARDETECT_H</span>
+<span class="cp">#define HAARDETECT_H</span>
+<span class="cp">#include &lt;opencv2\highgui\highgui.hpp&gt;</span>
+<span class="cp">#include &lt;opencv2\imgproc\imgproc.hpp&gt;</span>
+<span class="cp">#include &lt;opencv2\objdetect\objdetect.hpp&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">cv</span><span class="p">;</span>
+
+<span class="n">CvHaarClassifierCascade</span><span class="o">*</span> <span class="nf">Load_Haar_Cascade</span><span class="p">();</span>
+
+<span class="kt">void ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2014/11/29/face-dectect.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

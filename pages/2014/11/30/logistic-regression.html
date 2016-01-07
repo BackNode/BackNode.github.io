@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>机器学习笔记--逻辑斯蒂回归(logistic regression)</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2014/11/30/logistic-regression.html" rel="bookmark"
+           title="Permalink to 机器学习笔记--逻辑斯蒂回归(logistic regression)">机器学习笔记--逻辑斯蒂回归(logistic regression)</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2014-11-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/ji-qi-xue-xi.html">机器学习</a></span>
+</footer><!-- /.post-info -->      <h2>logistic</h2>
+<p>logistic regression实际上不是一个回归器，而是一个二分类器，即：给定的训练样本中一部分被标记为1（positive），剩下的被标记为0（negative），我们从这些样本中训练出一个分类器，给定输入特征（x），此分类器能够输出它预测的x的类别y，此时输出y只有两种情况：0和1.
+先看一下logistic函数：</p>
+<p><img alt="logistic函数" src="http://keepcodingblog.qiniudn.com/logistic%E5%87%BD%E6%95%B0.png" /></p>
+<p>下面是它的曲线图：</p>
+<p><img alt="logistic曲线图" src="http://keepcodingblog.qiniudn.com/logistics%E5%9B%BE%E7%89%87.png" /></p>
+<p>下面给出我们的logistic regression函数模型：</p>
+<p><img alt="逻辑回归函数模型" src="http://keepcodingblog.qiniudn.com/logistic%E5%87%BD%E6%95%B0%E6%A8%A1%E5%9E%8B.png" /></p>
+<p>这个模型是这样工作的：
+当h(x)输出值大于等于0.5时，预测x的类别为1；
+当h(x)输出值小于0.5时，预测x的类别为0。
+在这个函数模型中，x是输入，theta是我们要通过训练样本求的参数，求出theta之后我们就可以用这个模型去分类了。
+那我们如何从训练样本中求出theta呢？
+我们需要一个cost function，下面给出sklearn库中logisticRegression的实现使用的cost function：</p>
+<p><img alt="logisticRegressionCostFunction" src="http://keepcodingblog.qiniudn.com/logisticRegressionCostFunction.png" /></p>
+<p>上下两个式子分别采用L2和L1方法进行regularization,防止模型<strong>过拟合</strong>。
+式子左边是regularization term；右边是分类错误惩罚项；参数C权衡两者，实验中经验值，后面会讲到在实际中如何选取C。
+得到cost function之后我们的目标就是选出一组参数theta使costFunction最小，我们可以采用<strong>梯度下降流</strong>方法，得到最优theta。</p>
+<h2>polynomial</h2>
+<p>很多时候数据的特征维度不高(比如2)，但是样本却不是直线可分的，这个时候就需要人为地增加特征维度，如</p>
+<p><img alt="polynomial" src="http://keepcodingblog.qiniudn.com/polynomial.png" /></p>
+<p>这样我们得到的decision boundary 就不会只能是直线，而可能是各种各样的曲线，这些曲线分隔出样本的能力比直线更强。</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">poly_data</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>交叉验证(cross validation)</h2>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">grid_search</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    y_data:label</span>
+<span class="sd">    :return: searched grid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logisReg</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+    <span class="n">C_range</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">grid_parame</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="n">C_range</span><span class="p">)</span>
+    <span class="n">cvk</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span><span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">logisReg</span><span class="p">,</span> <span class="n">param_grid</span><span class="o">=</span><span class="n">grid_parame</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cvk</span><span class="p">)</span>
+    <span class="n">grid</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">grid</span>
+</pre></div>
+
+
+<p>将样本分成10份，遍历参数C的取值范围内的所有C：
+对于当前参数C，取一份样本作为test set，剩下的9份为train set，这样的取法总共有10种情况。用train set训练出来的分类器去评估test set，得到分类器在test set上的score，10种情况就有10个score，对这10个score取平均值作为当前参数C的score。
+遍历完所有C之后，取分数最高的那个C作为我们的模型中的C。</p>
+<h2>python</h2>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">cross_validation</span> <span class="k">as</span> <span class="n">cv</span>
+<span class="kn">from</span> <span class="nn">sklearn.grid_search</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">PolynomialFeatures</span>
+
+<span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    read data into numpy array</span>
+<span class="sd">    return a numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">grid_search</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    y_data:label</span>
+<span class="sd">    :return: searched grid</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logisReg</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+    <span class="n">C_range</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">**</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">grid_parame</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="n">C_range</span><span class="p">)</span>
+    <span class="n">cvk</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">StratifiedKFold</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_data</span><span class="p">,</span><span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">logisReg</span><span class="p">,</span> <span class="n">param_grid</span><span class="o">=</span><span class="n">grid_parame</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="n">cvk</span><span class="p">)</span>
+    <span class="n">grid</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">grid</span>
+
+<span class="k">def</span> <span class="nf">poly_data</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="n">poly</span> <span class="o">=</span> <span class="n">PolynomialFeatures</span><span class="p">(</span><span class="n">degree</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">poly</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">x_data</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;logisticRegData.txt&#39;</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span><span class="o">==</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span><span class="o">==</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">],</span> <span class="s">&#39;ro&#39;</span><span class="p">,</span><span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">y</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">],</span> <span class="s">&#39;rx&#39;</span><span class="p">)</span>
+
+    <span class="n">degree</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="n">X_poly</span> <span class="o">=</span> <span class="n">poly_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;with cross vadition-----------------------------------------:&quot;</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">grid_search</span><span class="p">(</span><span class="n">X_poly</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;the best classifier is :&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">best_estimator_</span><span class="p">)</span>
+    <span class="c">#print(&quot;logistic regression&#39;s coefficient: &quot;)</span>
+    <span class="c">#print(grid.best_estimator_.coef_)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;score on train data: &quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">best_estimator_</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_poly</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">grid</span><span class="o">.</span><span class="n">best_estimator_</span><span class="p">,</span> <span class="n">X_poly</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&#39;Estimated score: </span><span class="si">%0.5f</span><span class="s"> (+/- </span><span class="si">%0.5f</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="c"># .plot decision boundary,create a mesh to plot in</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">0.02</span>  <span class="c">#step size in the mesh</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">y_min</span><span class="p">,</span> <span class="n">y_max</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+    <span class="n">xxyy_poly</span> <span class="o">=</span> <span class="n">poly_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()],</span> <span class="n">degree</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">best_estimator_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">xxyy_poly</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">Z</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Paired</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    print(&quot;without cross vadition------------------------------------------:&quot;)</span>
+<span class="sd">    logisReg = linear_model.LogisticRegression()</span>
+<span class="sd">    logisReg.fit(X_poly, y)</span>
+<span class="sd">    print(&quot;logistic regression&#39;s coefficient: &quot;)</span>
+<span class="sd">    print(logisReg.coef_)</span>
+<span class="sd">    print(&quot;score on train data: &quot;)</span>
+<span class="sd">    print(logisReg.score(X_poly, y))</span>
+<span class="sd">    scores = cv.cross_val_score(logisReg, X_poly, y, cv=10)</span>
+<span class="sd">    print(&#39;Estimated score: %0.5f (+/- %0.5f)&#39; % (scores.mean(), scores.std() / 2))</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+
+<p>效果图：</p>
+<p><img alt="效果图" src="http://keepcodingblog.qiniudn.com/logisreg-figure_1.png" /></p>
+<p>数据在这里：<a href="http://keepcodingblog.qiniudn.com/logisticRegData.txt">logisticRegression.txt</a></p>
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2014/11/30/logistic-regression.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2014/11/30/logistic-regression.html" data-title="机器学习笔记--逻辑斯蒂回归(logistic regression)" data-url="http://backnode.github.io/pages/2014/11/30/logistic-regression.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

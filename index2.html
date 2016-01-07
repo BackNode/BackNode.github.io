@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+                <section id="content" class="body">
+                    <ol id="posts-list" class="hfeed" start="9">
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/07/13/gender_classify.html" rel="bookmark"
+                           title="Permalink to 深度学习之训练一个人脸性别分类器">深度学习之训练一个人脸性别分类器</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-07-13</span>
+<span>| tags: <a href="http://backnode.github.io/tag/deeplearning.html">deepLearning</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a><a href="http://backnode.github.io/tag/gender-classify.html">gender classify</a><a href="http://backnode.github.io/tag/cnn.html">CNN</a></span>
+</footer><!-- /.post-info -->                <h1>0. Whatever</h1>
+<hr />
+<p>深度学习越来越火，人人都能玩！</p>
+<p>在本文中我将通过深度学习方法训练一个性别分类器，即给定一张人脸图像，判断其性别。</p>
+<p>本文使用的深度学习框架：基于<a href="http://deeplearning.net/software/theano/">Theano</a>的<a href="http://keras.io/">Keras</a>（github:<a href="https://github.com/fchollet/keras">keras</a>）</p>
+<h1>1. Data Preprocess</h1>
+<hr />
+<p>数据来源：互联网明星图片。男性照片25个类，共3690张；女性照片15个类，共4309张。所有图片经过<strong>人脸检测对齐归一化</strong>到141*165尺寸大小。样例如下：</p>
+<p><img alt="female-face" src="http://7nio4l.com1.z0.glb.clouddn.com/female-face.jpg" /></p>
+<p>生成图片路径和label文件格式如下：</p>
+<div class="highlight"><pre><span class="o">...</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38243</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38244</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/07/13/gender_classify.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/07/13/static_blog.html" rel="bookmark"
+                           title="Permalink to docker + 坚果云 + pelican + github打造属于自己的纯云端博客">docker + 坚果云 + pelican + github打造属于自己的纯云端博客</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-07-13</span>
+<span>| tags: <a href="http://backnode.github.io/tag/pelican.html">pelican</a><a href="http://backnode.github.io/tag/docker.html">docker</a><a href="http://backnode.github.io/tag/blog.html">blog</a></span>
+</footer><!-- /.post-info -->                <h1>0. pelican和github搭建博客</h1>
+<hr />
+<p>这一步网上有很多攻略，以pelican + github为关键字谷歌一搜一大堆，不再赘述。</p>
+<h1>1. 云同步博客</h1>
+<hr />
+<p>将你的整个博客目录放在云同步软件中（如坚果云）中实时同步，包括pelican配置文件，原生markdown文件以及生成的静态html文件等。从此只要云同步软件公司不发生硬盘突然全部罢工等人力不可抗事件，你的博客就不会消失了，无论你换了多少台电脑。</p>
+<h1>2. docker虚拟机</h1>
+<hr />
+<p>pelican是linux平台下项目，如果你的新电脑是windows而你又不想安装双系统的话，那就只能安装虚拟机了，这个时候docker就出场了。</p>
+<p>总之，windows下安装好docker后，在virtualBox中设置共享文件夹固定分配：</p>
+<blockquote>
+<p>名称     路径</p>
+<p>blog/    E:MyNutstore\blog</p>
+</blockquote>
+<p>然后启动docker,进入boot2docker：</p>
+<div class="highlight"><pre>boot2docker ssh
+</pre></div>
+
+
+<p>挂载blog：</p>
+<div class="highlight"><pre>mkdir /home/docker/blog
+sudo /sbin/mount.vboxsf blog/ /home/docker/blog
+</pre></div>
+
+
+<p>然后在docker hub上找一个pelican环境拉下来 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/07/13/static_blog.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/05/13/knn.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之K近邻（k nearest neighbors）">机器学习算法之K近邻（k nearest neighbors）</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-05-13</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/knn.html">knn</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a></span>
+</footer><!-- /.post-info -->                <h1>1. K近邻算法</h1>
+<p>什么是K近邻算法？简单的说就是：给定所有训练数据和一组测试数据之后，在训练数据中寻找离这组测试数据最近的K组邻居，根据这K组邻居的label来做voting/average，从而预测出测试数据的label。</p>
+<p><img alt="knn-sample" src="http://keepcodingblog.qiniudn.com/knn-sample.png" /></p>
+<p>如上图所示，绿色圆圈是测试数据，其余为训练数据。假设<code>K == 3</code>，即寻找离测试数据最近的三个邻居，如图中黑色实线圆中的三个邻居(两个红色三角形，一个蓝色正方形)。在这三个邻居中，少数服从多数，所以测试数据就被分类为红色三角形。假设<code>K == 5</code>，那虚线圆中的5个邻居就是离测试数据最近的5个邻居，里面有三个蓝色正方形和2个红色三角形，所以少数服从多数，测试数据被分类为蓝色正方形。</p>
+<h1>2. 距离度量</h1>
+<p>那么如何找到最近的K个邻居呢？换句话说，如何度量样本之间的距离？</p>
+<p>最常用的距离度量方式自然是<strong>欧式距离</strong>，类似的还有<strong>马氏距离</strong>。本质上来说，寻找最近的邻居无非就是寻找最相似的邻居，所以<strong>余弦相似度</strong>这类相似度度量方式也完全可以在此处使用。</p>
+<h1>3. Search algorithms</h1>
+<p>接下来介绍查找最近K个邻居的算法：Brute Force， K-D ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/05/13/knn.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/05/01/markdown-math.html" rel="bookmark"
+                           title="Permalink to 在Pelican博客中写数学公式">在Pelican博客中写数学公式</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-05-01</span>
+<span>| tags: <a href="http://backnode.github.io/tag/pelican.html">pelican</a><a href="http://backnode.github.io/tag/shu-xue-gong-shi.html">数学公式</a><a href="http://backnode.github.io/tag/markdown.html">markdown</a></span>
+</footer><!-- /.post-info -->                <p>用markdown写pelican搭建的博客时，插入数学公式会是一个很头疼的问题。因为<code>python-markdown</code>不支持$,$$这些语法。</p>
+<p>第一步：安装<a href="https://github.com/barrysteyn/pelican_plugin-render_math">“render_math”</a>插件</p>
+<p>第二步：在<code>pelicanconf.py</code>文件中添加：</p>
+<div class="highlight"><pre><span class="n">PLUGINS</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;render_math&quot;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>测试一下：</p>
+<p>$x^2$
+$$x_{in}^3$$</p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$ ...</script><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+                <a class="readmore" href="http://backnode.github.io/pages/2015/05/01/markdown-math.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/04/30/decision-tree.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之决策树（decision tree）">机器学习算法之决策树（decision tree）</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-04-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/decision-tree.html">decision tree</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a></span>
+</footer><!-- /.post-info -->                <h1>modeling</h1>
+<p>先简单地举一个例子，看看什么是决策树。以下是一棵分类树，决定下班后是否要观看机器学习公开课。</p>
+<p><img alt="DT" src="http://keepcodingblog.qiniudn.com/DT-1.jpg" /></p>
+<p>我们可以看到从根节点开始往下会有分支，最终会走向叶子节点，得到分类结果。每一个非叶子节点都是一个特征，上图中共有三维特征。决策树是所有机器算法中与人脑处理问题方式最接近的算法，所以很好理解。一棵决策树可以被抽象成以下数学公式：</p>
+<p><img alt="DTmodel" src="http://keepcodingblog.qiniudn.com/DTmodel.jpg" /></p>
+<p>T是路径总数/叶子节点总数（上图中有6个叶子节点），<code>g_t(x)</code>是<code>base hypothesis</code>，上图中是常量<code>Y/N</code>，<code>q_t(x)</code>可以理解成<code>g_t(x)</code>的权重，取值为1或0：</p>
+<div class="highlight"><pre><span class="n">is</span> <span class="n">x</span> <span class="n">on</span> <span class="n">path</span> <span class="n">t</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+</pre></div>
+
+
+<p>我们也可以用递归的视角来看决策树：</p>
+<p><img alt="recursiveDTmodel" src="http://keepcodingblog.qiniudn.com/RecursiveDTmodel.jpg" /></p>
+<p><code>G_c(x)</code>是当前节点的子树：</p>
+<div class="highlight"><pre><span class="n">tree</span> <span class="o">=</span> <span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">sub</span><span class="o">-</span><span class="n">trees</span><span class="p">)</span>
+</pre></div>
+
+
+<h1>构建一棵决策树</h1>
+<p>按照以下伪代码我们可以递归式地构建一棵决策树：</p>
+<div class="highlight"><pre><span class="n">function</span> <span class="nf">DecisionTree ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/04/30/decision-tree.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/04/23/random-forest.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之随机森林（Random Forest）">机器学习算法之随机森林（Random Forest）</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-04-23</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/random-forest.html">random forest</a><a href="http://backnode.github.io/tag/machine-leaning.html">machine leaning</a></span>
+</footer><!-- /.post-info -->                <h1>机器学习算法之随机森林（Random Forest）</h1>
+<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/04/23/random-forest.html">BackNode</a></p>
+<p>随机森林作为两大<code>ensemble methods</code>之一，近年来非常火热，本文试图探讨一下其背后原理，欢迎指正！</p>
+<h2>Bagging</h2>
+<p>Bagging方法是<code>ensemble methods</code>中获得用于训练<code>base estimator</code>的数据的重要一环。
+正如其名，<code>Bagging</code>方法就是将所有<code>training data</code>放进一个黑色的<code>bag</code>中，黑色意味着我们看不到里面的数据的详细情况，只知道里面有我们的数据集。然后从这个<code>bag</code>中随机抽一部分数据出来用于训练一个<code>base estimator</code>。抽到的数据用完之后我们有两种选择，放回或不放回。</p>
+<p>既然样本本身可以<code>bagging</code>，那么<code>feature</code>是不是也可以<code>bagging</code>呢？当然可以！<code>bagging</code>完数据本身之后我们可以再<code>bagging</code> <code>features</code>，即从所有特征维度里面随机选取部分特征用于训练 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/04/23/random-forest.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/04/16/knapsack-bnb.html" rel="bookmark"
+                           title="Permalink to 离散优化之Knapsack问题（二）：relaxation, branch and bound">离散优化之Knapsack问题（二）：relaxation, branch and bound</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-04-16</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/bnb.html">bnb</a></span>
+</footer><!-- /.post-info -->                <h1>knapsack问题之relaxation, branch and bound</h1>
+<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/04/16/knapsack-bnb.html">BackNode</a>
+我们接着上回（<a href="http://backnode.github.io/pages/2015/04/14/knapsack-dp.html">传送门：动态规划</a>）继续分析knapsack问题。</p>
+<h2>问题描述</h2>
+<p>你有一个负重量为<code>capacity</code>的背包，摆在你面前的是一堆宝物，宝物有重量<code>weight</code>和价值<code>value</code>，你要在你的背包中装下宝物将它们占为己有，因此你希望背包中的宝物负重量不超过<code>capacity</code>，同时背包中的宝物的价值<code>value</code>尽可能的大。
+输入：</p>
+<div class="highlight"><pre><span class="mi">4</span> <span class="mi">11</span> 
+<span class="mi">8</span> <span class="mi">4</span>
+<span class="mi">10</span> <span class="mi">5</span>
+<span class="mi">15</span> <span class="mi">8</span>
+<span class="mi">4</span> <span class="mi">3</span>
+</pre></div>
+
+
+<p>第一行<code>4 11</code>表示宝物数量<code>item_count</code>为4，背包负重量<code>capacity</code>为11
+接下来为<code>item_count</code>行，每行第一个元素是该宝物的价值<code>value ...</code></p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/04/16/knapsack-bnb.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/04/14/knapsack-dp.html" rel="bookmark"
+                           title="Permalink to 离散优化之Knapsack问题（一）：动态规划">离散优化之Knapsack问题（一）：动态规划</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-04-14</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/dp.html">dp</a></span>
+</footer><!-- /.post-info -->                <h1>knapsack问题之动态规划</h1>
+<h2>问题描述</h2>
+<p>你有一个负重量为<code>capacity</code>的背包，摆在你面前的是一堆宝物，宝物有重量<code>weight</code>和价值<code>value</code>，你要在你的背包中装下宝物将它们占为己有，因此你希望背包中的宝物负重量不超过<code>capacity</code>，同时背包中的宝物的价值<code>value</code>尽可能的大。
+输入：</p>
+<div class="highlight"><pre><span class="mi">4</span> <span class="mi">11</span> 
+<span class="mi">8</span> <span class="mi">4</span>
+<span class="mi">10</span> <span class="mi">5</span>
+<span class="mi">15</span> <span class="mi">8</span>
+<span class="mi">4</span> <span class="mi">3</span>
+</pre></div>
+
+
+<p>第一行<code>4 11</code>表示宝物数量<code>item_count</code>为4，背包负重量<code>capacity</code>为11
+接下来为<code>item_count</code>行，每行第一个元素是该宝物的价值<code>value</code>，第二个元素是该宝物的重量<code>weight</code>。</p>
+<h2>问题建模</h2>
+<p><img alt="数学模型" src="http://keepcodingblog.qiniudn.com/knapsack-modeling.jpg" /></p>
+<p><code>x[i]=1</code>表示选中宝物<code>i</code>,<code>x ...</code></p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/04/14/knapsack-dp.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/04/02/csharp-cpp.html" rel="bookmark"
+                           title="Permalink to C#调用C++类(内含OpenCV代码)">C#调用C++类(内含OpenCV代码)</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-04-02</span>
+<span>| tags: <a href="http://backnode.github.io/tag/opencv.html">opencv</a></span>
+</footer><!-- /.post-info -->                <h1>C#调用C++类(内含OpenCV代码)</h1>
+<p>C++工程通过托管代码生成dll供C#工程调用，即便C++工程中的类用到了其他依赖库也没关系。下例中C++工程用OpenCV读取图片并在窗口中显示，C#工程引用C++工程生成的dll，也可以做到读取图片并在窗口中显示。</p>
+<h2>C++工程</h2>
+<p>新建C++工程，配置中设置输出类型为<strong>动态库(.dll)</strong>,公共语言运行时支持设置为<strong>“公共语言运行支持(/clr)”</strong>。</p>
+<p>首先新建fatory类：
+factory.h</p>
+<div class="highlight"><pre><span class="cp">#ifndef FACTORY_H</span>
+<span class="cp">#define FACTORY_H</span>
+
+<span class="cp">#include &lt;opencv2/opencv.hpp&gt;</span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">cv</span><span class="p">;</span>
+<span class="k">class</span>  <span class="nc">factory</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">show</span><span class="p">();</span>
+<span class="p">};</span>
+<span class="cp">#endif</span>
+</pre></div>
+
+
+<p>factory.cpp ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/04/02/csharp-cpp.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/03/30/python-local-global.html" rel="bookmark"
+                           title="Permalink to python学习--locals globals">python学习--locals globals</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-03-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a></span>
+</footer><!-- /.post-info -->                <h1>python学习--locals globals</h1>
+<h2>locals() and globals()</h2>
+<p><code>locals()</code>和<code>globals()</code>是python的两个内置函数，它们提供了基于dictionary的访问局部和全局变量的方式。
+<code>locals()</code>返回一个名字/值对的dictionary。这个dictionary的键字是字符串形式的变量名字，diction的值是变量的实际值。</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="n">num</span> <span class="o">=</span> <span class="mi">90</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="nb">locals</span><span class="p">()</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="nb">locals</span><span class="p">()[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="o">...</span><span class="p">:</span>     
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">13</span><span class="p">]:</span> <span class="n">func</span><span class="p">(</span><span class="s">&#39;hello&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="s">&#39;num&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s">&#39;arg&#39;</span><span class="p">:</span> <span class="s">&#39;hello&#39;</span><span class="p">}</span>
+<span class="n">hello</span>
+</pre></div>
+
+
+<p><code>globals()</code>函数则返回包含全局变量的dictionary，在下例中，<code>operation()</code>函数根据<code>oper</code>变量的值自动调用相应的全局函数：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">plus</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">return ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/03/30/python-local-global.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+        <a href="http://backnode.github.io/index.html">&laquo;</a>
+    Page 2 / 3
+        <a href="http://backnode.github.io/index3.html">&raquo;</a>
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

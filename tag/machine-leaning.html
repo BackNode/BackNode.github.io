@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - machine leaning</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/04/23/random-forest.html">机器学习算法之随机森林（Random Forest）</a></h1>
+<footer class="post-info">
+        <span>2015-04-23</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/random-forest.html">random forest</a><a href="http://backnode.github.io/tag/machine-leaning.html">machine leaning</a></span>
+</footer><!-- /.post-info --><h1>机器学习算法之随机森林（Random Forest）</h1>
+<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/04/23/random-forest.html">BackNode</a></p>
+<p>随机森林作为两大<code>ensemble methods</code>之一，近年来非常火热，本文试图探讨一下其背后原理，欢迎指正！</p>
+<h2>Bagging</h2>
+<p>Bagging方法是<code>ensemble methods</code>中获得用于训练<code>base estimator</code>的数据的重要一环。
+正如其名，<code>Bagging</code>方法就是将所有<code>training data</code>放进一个黑色的<code>bag</code>中，黑色意味着我们看不到里面的数据的详细情况，只知道里面有我们的数据集。然后从这个<code>bag</code>中随机抽一部分数据出来用于训练一个<code>base estimator</code>。抽到的数据用完之后我们有两种选择，放回或不放回。</p>
+<p>既然样本本身可以<code>bagging</code>，那么<code>feature</code>是不是也可以<code>bagging</code>呢？当然可以！<code>bagging</code>完数据本身之后我们可以再<code>bagging</code> <code>features</code>，即从所有特征维度里面随机选取部分特征用于训练。在后面我们会看到，这两个<strong>‘随机’</strong>就是随机森林的精髓所在。从随机性来看，<code>bagging</code>技术可以有效的减小方差，即减小过拟合程度。</p>
+<p>在<a href="http://scikit-learn.org">scikit-learn</a>中，我们可以很方便的将<code>bagging</code>技术应用于一个分类器/回归器，提高性能：</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">BaggingClassifier</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">bagging</span> <span class="o">=</span> <span class="n">BaggingClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">bootstrap</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                <span class="n">KNeighborsClassifier</span><span class="p">(),</span> <span class="n">bootstrap_features</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                                <span class="n">max_samples</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">max_features</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Decision Tree</h2>
+<p>关于决策树，在这里不展开详细探讨，有机会的话另开一篇博客细说。先简单地举一个例子，以下是一棵分类树，决定下班后是否要观看机器学习公开课。</p>
+<p><img alt="DT" src="http://keepcodingblog.qiniudn.com/DT-1.jpg" /></p>
+<p>我们可以看到从根节点开始往下会有分支，最终会走向叶子节点，得到分类结果。每一个非叶子节点都是一个特征，上图中共有三维特征。但是决策树的一个劣势就是容易过拟合，下面我们要结合上文提到的<code>bagging</code>技术来中和一下。</p>
+<h2>Random Forest</h2>
+<p><code>bagging + decision trees</code>，我们得到了随机森林。将决策树作为<code>base estimator</code>，然后采用<code>bagging</code>技术训练一大堆小决策树，最后将这些小决策树组合起来，这样就得到了一片森林(随机森林)。</p>
+<h3>OOB</h3>
+<p>我们看一下详细过程：</p>
+<p><img alt="RF" src="http://keepcodingblog.qiniudn.com/randomForest-t1.jpg" /></p>
+<p><code>(X[1],Y[1])....(X[n],Y[n])</code>是数据集，我们要训练T棵决策树<code>g[1]....g[t]...g[T]</code>。
+每次从数据中有放回地随机抽取<code>size-N'</code>的子数据集<code>D[t]</code>用于训练第<code>t</code>棵决策树<code>g[t]</code>。上图右边的表格中，每一列的<code>*</code>数据是没有被选中用于训练决策树<code>g[t]</code>的数据，我们称之为决策树<code>g[t]</code>的<strong><code>out-of-bag(OOB)</code></strong>样本。为什么要引入这个概念？因为在实际中数据通常是异常宝贵的，按照传统流程我们要将从数据集中分出一部分作为验证集，进而用验证集来调参。在随机森林中既然每棵树都有<code>OOB</code>样本，那我们能不能把它们充分利用起来作为验证集呢？</p>
+<p><img alt="OOB" src="http://keepcodingblog.qiniudn.com/OOB.jpg" /></p>
+<p>上图中<code>Eoob(G)</code>是整个随机森林的<code>OOB error</code>，<code>G-(X[n])</code>中只含有对于<code>X[n]</code>是<code>OOB</code>样本的树。用<code>OOB error</code>代替验证集错误，在实践中效果非常好，更大的一点好处是节省了验证集数据开销。</p>
+<h3>feature importance</h3>
+<p>在实践中，数据中会有很多多余甚至无关特征，这些特征会严重影响模型的分类/回归效果。在随机森林中我们可以根据它自带的<code>feature importance</code>筛选特征。
+如果你了解决策树的话，会知道决策树会根据信息熵逐一选取重要的特征。那么在随机森林中如何计算<code>feature importance</code>呢？核心<code>idea</code>：<strong>如果特征<code>i</code>对模型是有利的，那么将第<code>i</code>维特征置换为随机值，将会降低模型的性能</strong>。</p>
+<p><img alt="feature importance" src="http://keepcodingblog.qiniudn.com/feature-importance.jpg" /></p>
+<p>将完整模型的性能减去置换第<code>i</code>维特征后的模型，就得到了第<code>i</code>维特征的重要性。那么问题来了，~~挖掘技术哪家强~~，要评估置换第<code>i</code>维特征后的模型性能，我们岂不是要重新训练并用验证集来评估性能？当然不用，忘了我们的<code>OOB error</code>吗？在随机森林中我们可以用<code>OOB error</code>来衡量模型性能，此处同样可以引入<code>OOB error</code>。</p>
+<p><img alt="feature importance with OOB" src="http://keepcodingblog.qiniudn.com/feature-importance-2.jpg" /></p>
+<h2>经验之谈：调参</h2>
+<p>理论上来说，随机森林中树的数目越多，模型的效果就越好，但是计算量也就越大，增加树的数目带来的效果提升程度是递减的。所以选择一个合适的参数就可以了，没有必要为了提升一丁点效果徒增计算量。</p>
+<p>在<a href="http://scikit-learn.org">scikit-learn</a>中提供了一个函数<code>GridSearchCV</code>用于各类模型的调参，非常方便：</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.grid_search</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+</pre></div>
+
+
+<p>最后，感谢<a href="https://www.coursera.org/course/ntumltwo">coursera上林老师的机器学习算法公开课</a>，本文图片均来自林老师的PPT。</p>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

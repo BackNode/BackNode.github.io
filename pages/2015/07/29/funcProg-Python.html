@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Function Programming in Python: 1. (Avoiding) Flow Control</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li class="active"><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2015/07/29/funcProg-Python.html" rel="bookmark"
+           title="Permalink to Function Programming in Python: 1. (Avoiding) Flow Control">Function Programming in Python: 1. (Avoiding) Flow Control</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2015-07-29</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/function-programming.html">function programming</a><a href="http://backnode.github.io/tag/han-shu-shi-bian-cheng.html">函数式编程</a></span>
+</footer><!-- /.post-info -->      <h1>0. whatever</h1>
+<hr />
+<p><em>“Function Programming in Python”</em> Chapter 1：避免流控制</p>
+<p>在传统的imperative式编程中，一段代码通常包括一些循环（<code>while</code>或<code>for</code>）、变量的声明和数据的修改（dict，list，set等）、分支语句（<code>if/elif/else/</code>, <code>try/except/finally</code>）。所有这些看起来都很自然，很好理解。这些状态变量和可修改的数据结构通常从现实世界中抽象而来，但是它们会带来一些副作用，<strong>随意给定程序的一个断点，我们很难靠人脑快速精确地推断出这些数据里面的值</strong>，所以我们经常需要依靠编译器的帮助来查看这些数据里面的值是不是我们想要的那样。</p>
+<p>一个解决方案是使我们的代码专注于描述数据是什么（<strong>what</strong>），而不是如何构建数据（<strong>how</strong>）.</p>
+<h1>1. Encapsulation （封装）</h1>
+<hr />
+<p>最先想到的专注于“what”而不是“how”的方法就是：重构代码，把数据构建的操作放在一个独立的地方。考虑改写如下代码：</p>
+<div class="highlight"><pre><span class="c"># configure the data to start with</span>
+<span class="n">collection</span> <span class="o">=</span> <span class="n">get_initial_state</span><span class="p">()</span>
+<span class="n">state_var</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">data_set</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">state_var</span><span class="p">):</span>
+        <span class="n">state_var</span> <span class="o">=</span> <span class="n">calculate_from</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">modify</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">state_var</span><span class="p">)</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">modify_differently</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+
+<span class="c"># Now actually work with the data</span>
+<span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">collection</span><span class="p">:</span>
+<span class="n">process</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+</pre></div>
+
+
+<p>简单地把如何构建数据的过程放进一个独立的函数中：</p>
+<div class="highlight"><pre><span class="c"># tuck away construction of data</span>
+<span class="k">def</span> <span class="nf">make_collection</span><span class="p">(</span><span class="n">data_set</span><span class="p">):</span>
+    <span class="n">collection</span> <span class="o">=</span> <span class="n">get_initial_state</span><span class="p">()</span>
+    <span class="n">state_var</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">data_set</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">state_var</span><span class="p">):</span>
+        <span class="n">state_var</span> <span class="o">=</span> <span class="n">calculate_from</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">state_var</span><span class="p">)</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">modify</span><span class="p">(</span><span class="n">datum</span><span class="p">,</span> <span class="n">state_var</span><span class="p">)</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">modify_differently</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">add_to</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">collection</span>
+
+<span class="c"># Now actually work with the data</span>
+<span class="k">for</span> <span class="n">thing</span> <span class="ow">in</span> <span class="n">make_collection</span><span class="p">(</span><span class="n">data_set</span><span class="p">):</span>
+<span class="n">process</span><span class="p">(</span><span class="n">thing</span><span class="p">)</span>
+</pre></div>
+
+
+<p>没有改变程序逻辑，但是我们已经把关注点从“<strong>如何</strong>构建数据”转移到“<code>make_collection()</code>创建了<strong>什么</strong>”上。</p>
+<h1>2. Comprehensions （推导式）</h1>
+<hr />
+<p>使用推导式既可以使代码精悍小巧，又能帮助我们将重心从“how”转移到“what”上。例如，如果我们的原代码如下：</p>
+<div class="highlight"><pre><span class="n">collection</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">datum</span> <span class="ow">in</span> <span class="n">data_set</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">datum</span><span class="p">):</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">modify</span><span class="p">(</span><span class="n">datum</span><span class="p">)</span>
+        <span class="n">collection</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+</pre></div>
+
+
+<p>我们可以紧凑地写：</p>
+<div class="highlight"><pre><span class="n">collection</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">else</span> <span class="n">modify</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data_set</span><span class="p">]</span>
+</pre></div>
+
+
+<p>这样写我们永远都不用考虑或者debug：在循环中的某个断点，<code>collection</code>里面是什么。上例是一个列表推导式，对于<code>dic</code>和<code>set</code>类似：</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span><span class="nb">chr</span><span class="p">(</span><span class="mi">65</span><span class="o">+</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)}</span>
+<span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s">&#39;C&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s">&#39;D&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s">&#39;F&#39;</span><span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="p">{</span><span class="nb">chr</span><span class="p">(</span><span class="mi">65</span><span class="o">+</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">)}</span>
+<span class="p">{</span><span class="s">&#39;A&#39;</span><span class="p">,</span> <span class="s">&#39;B&#39;</span><span class="p">,</span> <span class="s">&#39;C&#39;</span><span class="p">,</span> <span class="s">&#39;D&#39;</span><span class="p">,</span> <span class="s">&#39;E&#39;</span><span class="p">,</span> <span class="s">&#39;F&#39;</span><span class="p">}</span>
+</pre></div>
+
+
+<h2>2.1 Generators （生成器）</h2>
+<hr />
+<p>生成器是Python中的一个内建类型，可以当作迭代器来使用，它功能的实现依赖于关键字<code>yield</code>,简单举个例子：</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">gen</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">while</span> <span class="n">num</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">num</span>
+        <span class="n">num</span> <span class="o">-=</span> <span class="mi">1</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gen</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">i</span>
+<span class="c"># output: </span>
+<span class="c"># 3</span>
+<span class="c"># 2</span>
+<span class="c"># 1</span>
+</pre></div>
+
+
+<p>这是imperative版本的“构造一个generator”，同样有函数编程风格的：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">60</span><span class="p">]:</span> <span class="n">g</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">61</span><span class="p">]:</span> <span class="nb">type</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">61</span><span class="p">]:</span> <span class="n">generator</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">62</span><span class="p">]:</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="n">i</span>
+    <span class="o">...</span><span class="p">:</span>     
+<span class="mi">3</span>
+<span class="mi">2</span>
+<span class="mi">1</span>
+</pre></div>
+
+
+<p>可以看出<code>generator comprehension</code>和<code>list comprehension</code>很相似，区别仅在于前者用小括号<code>()</code>，后者用方括号<code>[]</code>。</p>
+<h1>3. Eliminating Loops （消灭循环）</h1>
+<hr />
+<h2>3.1 for循环</h2>
+<p>循环是命令式编程（imperative programming）中很常见的，比如我们要在for循环中调用函数<code>func(e)</code>：</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">it</span><span class="err">：</span>  <span class="c"># statement-based loop</span>
+    <span class="n">func</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+
+
+<p>下面是对应的函数式版本，没有重复的变量<code>e</code>的参与，因此也就没有中间状态：</p>
+<div class="highlight"><pre><span class="nb">map</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>   <span class="c"># map()-based &quot;loop&quot;</span>
+</pre></div>
+
+
+<p>在命令式编程中，经常会看到类似<strong>“先执行这个动作，再执行那个动作，然后再执行另外一个动作”</strong>的过程。如果把这些独立的动作分别分装进函数中，然后再调用<strong><code>map()</code></strong>函数，：</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">f1</span><span class="p">():</span>
+    <span class="c"># do first thing </span>
+
+<span class="k">def</span> <span class="nf">f2</span><span class="p">():</span>
+    <span class="c"># do second thing </span>
+
+<span class="k">def</span> <span class="nf">f3</span><span class="p">():</span>
+    <span class="c"># do third thing </span>
+
+<span class="n">do_it</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="c"># do_it作为执行函数</span>
+<span class="nb">map</span><span class="p">(</span><span class="n">do_it</span><span class="p">,</span> <span class="p">[</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span><span class="p">])</span>
+</pre></div>
+
+
+<p>我们还可以给函数传参：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="n">hello</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">first</span><span class="p">,</span> <span class="n">last</span><span class="p">:</span> <span class="p">(</span><span class="s">&quot;Hello,&quot;</span> <span class="o">+</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">first</span><span class="p">,</span> <span class="n">last</span><span class="p">]))</span>
+    <span class="o">...</span><span class="p">:</span> <span class="n">bye</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">first</span><span class="p">,</span> <span class="n">last</span><span class="p">:</span> <span class="p">(</span><span class="s">&quot;Bye,&quot;</span> <span class="o">+</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">first</span><span class="p">,</span> <span class="n">last</span><span class="p">]))</span>
+    <span class="o">...</span><span class="p">:</span> <span class="n">do_it</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="o">...</span><span class="p">:</span> <span class="nb">map</span><span class="p">(</span><span class="n">do_it</span><span class="p">,</span> <span class="p">[</span><span class="n">hello</span><span class="p">,</span> <span class="n">bye</span><span class="p">],</span> <span class="p">[</span><span class="s">&#39;david&#39;</span><span class="p">,</span> <span class="s">&#39;johnson&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s">&#39;electon&#39;</span><span class="p">,</span> <span class="s">&#39;mili&#39;</span><span class="p">])</span>
+    <span class="o">...</span><span class="p">:</span> 
+<span class="n">Out</span><span class="p">[</span><span class="mi">14</span><span class="p">]:</span> <span class="p">[</span><span class="s">&#39;Hello,david electon&#39;</span><span class="p">,</span> <span class="s">&#39;Bye,johnson mili&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>上例中<code>map()</code>函数接受了四个参数：第一个参数是执行函数，后三个是长度相等的<code>list</code>，<code>map</code>会同时迭代这三个<code>list</code>，将这三个<code>list</code>中的每一组元素（<code>[hello, 'david', 'electon']</code>和<code>[bye, 'johnson', 'mili']</code>）传递给<code>do_it</code>。
+从输出可以看到<code>map()</code>将两个函数<code>hello</code>,<code>bye</code>的<code>return</code>结果放进<code>list</code>作为<code>map()</code>的<code>return</code>结果。
+如果不是要分开传参，而是将所有参数传给每个function呢？</p>
+<div class="highlight"><pre><span class="c"># use list comprehension </span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="n">do_all_funcs</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fns</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">))</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">fns</span><span class="p">]</span>
+<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="n">do_all_funcs</span><span class="p">([</span><span class="n">hello</span><span class="p">,</span> <span class="n">bye</span><span class="p">],</span> <span class="p">[</span><span class="s">&#39;david&#39;</span><span class="p">,</span> <span class="s">&#39;johnson&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s">&#39;electon&#39;</span><span class="p">,</span> <span class="s">&#39;mili&#39;</span><span class="p">])</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">4</span><span class="p">]:</span> 
+<span class="p">[[</span><span class="s">&#39;Hello,david electon&#39;</span><span class="p">,</span> <span class="s">&#39;Hello,johnson mili&#39;</span><span class="p">],</span>
+ <span class="p">[</span><span class="s">&#39;Bye,david electon&#39;</span><span class="p">,</span> <span class="s">&#39;Bye,johnson mili&#39;</span><span class="p">]]</span>
+</pre></div>
+
+
+<h2>3.2 while循环</h2>
+<p>通常来说，我们一整个<code>main</code>程序原则上都可以使用一个<code>map()</code>表达式完成。</p>
+<p>将while循环转换成函数式要稍微复杂一点，我们可以直接使用递归来实现。
+下面是基于语句的while循环：</p>
+<div class="highlight"><pre><span class="c"># statement-based while loop</span>
+<span class="k">while</span> <span class="o">&lt;</span><span class="n">cond</span><span class="o">&gt;</span><span class="p">:</span>
+    <span class="o">&lt;</span><span class="n">pre</span><span class="o">-</span><span class="n">suite</span><span class="o">&gt;</span>
+    <span class="k">if</span> <span class="o">&lt;</span><span class="n">break_condition</span><span class="o">&gt;</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="o">&lt;</span><span class="n">suite</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p>函数式while循环：</p>
+<div class="highlight"><pre><span class="c"># FP-style recursive while loop</span>
+<span class="k">def</span> <span class="nf">while_block</span><span class="p">():</span>
+    <span class="o">&lt;</span><span class="n">pre</span><span class="o">-</span><span class="n">suite</span><span class="o">&gt;</span>
+    <span class="k">if</span> <span class="o">&lt;</span><span class="n">break_condition</span><span class="o">&gt;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="o">&lt;</span><span class="n">suite</span><span class="o">&gt;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+<span class="n">while_FP</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="p">(</span><span class="o">&lt;</span><span class="n">cond</span><span class="o">&gt;</span> <span class="ow">and</span> <span class="n">while_block</span><span class="p">())</span> <span class="ow">or</span> <span class="n">while_FP</span><span class="p">()</span>
+<span class="n">while_FP</span><span class="p">()</span>
+</pre></div>
+
+
+<p>上述代码中仍然需要一个<code>while_block()</code>函数，这个函数可能不仅仅包含表达式，还包括一些其他语句，当然我们可以把这些过程语句用上一小节提到的<code>map()</code>方法改写成函数式，这个过程虽然会好玩，但是结果可能就不那么好看了。
+看一个例子：</p>
+<div class="highlight"><pre><span class="c"># imperative version of &quot;echo()&quot;</span>
+<span class="k">def</span> <span class="nf">echo_IMP</span><span class="p">():</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;input something:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s">&#39;quit&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="c"># FP version of &quot;echo()&quot;</span>
+<span class="k">def</span> <span class="nf">identity_print</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+<span class="n">echo_FP</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">identity_print</span><span class="p">(</span><span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;input something:&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="s">&#39;quit&#39;</span> <span class="ow">or</span> <span class="n">echo_FP</span><span class="p">()</span>
+</pre></div>
+
+
+<h1>参考</h1>
+<ol>
+<li><em>“Function Programming in Python”</em>，David Mertz</li>
+</ol>
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/07/29/funcProg-Python.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2015/07/29/funcProg-Python.html" data-title="Function Programming in Python: 1. (Avoiding) Flow Control" data-url="http://backnode.github.io/pages/2015/07/29/funcProg-Python.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

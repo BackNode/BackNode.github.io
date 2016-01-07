@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - multi threading</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/08/31/multi-thread.html">关于多线程编程的一点思考</a></h1>
+<footer class="post-info">
+        <span>2015-08-31</span>
+<span>| tags: <a href="http://backnode.github.io/tag/multi-threading.html">multi threading</a><a href="http://backnode.github.io/tag/duo-xian-cheng.html">多线程</a></span>
+</footer><!-- /.post-info --><h1>0. 起因</h1>
+<hr />
+<p>有一堆图片，比如20000张甚至更多，需要我批量处理，处理单张图片的函数<code>processImg(image_path)</code>已经写好，如何效率完成任务？</p>
+<h1>1. 出发</h1>
+<hr />
+<p>既然要效率完成任务，不用想当然是多线程，借助<code>boost</code>库线程池：</p>
+<div class="highlight"><pre><span class="c1">// this piece of code is from Internet </span>
+
+<span class="cp">#include &lt;boost/asio/io_service.hpp&gt;</span>
+<span class="cp">#include &lt;boost/bind.hpp&gt;</span>
+<span class="cp">#include &lt;boost/thread/thread.hpp&gt;</span>
+
+<span class="k">namespace</span> <span class="n">multithread</span>
+<span class="p">{</span>                   
+    <span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">io_service</span><span class="o">::</span><span class="n">work</span><span class="o">&gt;</span> <span class="n">asio_worker</span><span class="p">;</span>
+
+    <span class="k">struct</span> <span class="n">ThreadPool</span> <span class="p">{</span>
+        <span class="n">ThreadPool</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">threads</span><span class="p">)</span> <span class="o">:</span><span class="n">service</span><span class="p">(),</span> <span class="n">working</span><span class="p">(</span><span class="k">new</span> <span class="n">asio_worker</span><span class="o">::</span><span class="n">element_type</span><span class="p">(</span><span class="n">service</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">while</span><span class="p">(</span><span class="n">threads</span><span class="o">--</span><span class="p">)</span>
+            <span class="p">{</span>       
+                <span class="k">auto</span> <span class="n">worker</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="o">&amp;</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">io_service</span><span class="o">::</span><span class="n">run</span><span class="p">,</span> <span class="o">&amp;</span><span class="p">(</span><span class="k">this</span><span class="o">-&gt;</span><span class="n">service</span><span class="p">));</span>
+                <span class="n">g</span><span class="p">.</span><span class="n">add_thread</span><span class="p">(</span><span class="k">new</span> <span class="n">boost</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">worker</span><span class="p">));</span>                                                                                                                                 
+            <span class="p">}</span>       
+        <span class="p">}</span>           
+
+        <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">F</span><span class="o">&gt;</span>
+            <span class="kt">void</span> <span class="n">enqueue</span><span class="p">(</span><span class="n">F</span> <span class="n">f</span><span class="p">){</span> 
+                <span class="n">service</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+            <span class="p">}</span>       
+
+        <span class="o">~</span><span class="n">ThreadPool</span><span class="p">()</span> <span class="p">{</span>
+            <span class="n">working</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span> <span class="c1">//allow run() to exit</span>
+            <span class="n">g</span><span class="p">.</span><span class="n">join_all</span><span class="p">();</span>
+            <span class="n">service</span><span class="p">.</span><span class="n">stop</span><span class="p">();</span>
+        <span class="p">}</span>           
+
+        <span class="k">private</span><span class="o">:</span> 
+        <span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">io_service</span> <span class="n">service</span><span class="p">;</span> <span class="c1">//&lt; the io_service we are wrapping</span>
+        <span class="n">asio_worker</span> <span class="n">working</span><span class="p">;</span>
+        <span class="n">boost</span><span class="o">::</span><span class="n">thread_group</span> <span class="n">g</span><span class="p">;</span> <span class="c1">//&lt; need to keep track of threads so we can join them</span>
+    <span class="p">};</span>              
+<span class="p">}</span>
+</pre></div>
+
+
+<p>然后遍历所有图片路径，将每一个处理图片的任务塞进线程池：</p>
+<div class="highlight"><pre><span class="c1">// toy code</span>
+<span class="kt">size_t</span> <span class="n">n_threads</span> <span class="o">=</span> <span class="mi">24</span><span class="p">;</span>
+<span class="n">multithread</span><span class="o">::</span><span class="n">ThreadPool</span> <span class="n">tp</span><span class="p">(</span><span class="n">n_threads</span><span class="p">);</span>
+<span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">image_path</span><span class="p">:</span> <span class="n">image_paths</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">tp</span><span class="p">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">processImg</span><span class="p">,</span> <span class="n">image_path</span><span class="p">));</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>然而事情并没有这么简单，实际效率并不高，甚至还不如单线程处理，CPU完全没有被利用起来。</p>
+<p>为什么？</p>
+<h1>2. 加速</h1>
+<hr />
+<p>后来我想到：处理一张图片实际上不需要花费多少时间，很快就被线程执行完，然而调配任务给线程同样花费时间，按照上文的做法，时间实际上都被浪费在调配线程上（调配20000次），所以效率低。</p>
+<p>更效率的做法当然是将2000张图片分成<code>n_threads</code>组，每个线程处理一组图片，这样程序就只需要调配线程<code>n_threads</code>次，可以将CPU充分利用起来。</p>
+<div class="highlight"><pre><span class="c1">//handle a group of images </span>
+<span class="kt">void</span> <span class="nf">processImgs</span><span class="p">(</span><span class="n">image_paths</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">image_path</span><span class="p">:</span><span class="n">image_paths</span><span class="p">)</span>
+        <span class="n">processImg</span><span class="p">(</span><span class="n">image_path</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">size_t</span> <span class="n">n_threads</span> <span class="o">=</span> <span class="mi">24</span><span class="p">;</span>
+<span class="n">multithread</span><span class="o">::</span><span class="n">ThreadPool</span> <span class="n">tp</span><span class="p">(</span><span class="n">n_threads</span><span class="p">);</span>
+
+<span class="c1">//group image paths</span>
+<span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">image_group</span> <span class="o">=</span> <span class="n">group_paths</span><span class="p">(</span><span class="n">image_paths</span><span class="p">);</span>
+
+<span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">paths</span><span class="p">:</span> <span class="n">image_group</span><span class="p">)</span>
+    <span class="n">tp</span><span class="p">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">bind</span><span class="p">(</span><span class="n">processImgs</span><span class="p">,</span> <span class="n">paths</span><span class="p">));</span>
+</pre></div>
+
+
+<p>这样改进之后，程序果然飞起来了~~</p>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

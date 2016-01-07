@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2015/11/11/spp-net.html" rel="bookmark"
+           title="Permalink to 论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》">论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-11</span>
+<span>| tags: <a href="http://backnode.github.io/tag/cnn.html">CNN</a><a href="http://backnode.github.io/tag/spp.html">SPP</a></span>
+</footer><!-- /.post-info -->      <h1>0. 摘要</h1>
+<hr />
+<ol>
+<li>
+<p>现有的卷积神经网络要求输入图片为固定尺寸，也就是说做用CNN图像识别时要对输入图像进行尺寸归一化，这样做可能会影响识别准确率。</p>
+</li>
+<li>
+<p>在图像物体检测任务中，一般来说先需要对图像进行窗口扫描生成候选窗口，然后以窗口图像为输入逐个判断。这个过程中有很多重复计算：提取卷积特征（即全连接层之前的所有层）并不要求输入图像尺寸固定，所以单张图像实际上只需计算一遍卷积特征即可。</p>
+</li>
+</ol>
+<p>本文要介绍的SPP-net便解决了上述两个问题，并在2014年ImageNet的物体检测比赛中取得第二名，图像分类比赛中取得第三名。</p>
+<h1>1. DEEP NETWORKS WITH SPATIAL PYRAMID POOLING</h1>
+<hr />
+<h2>1.1 Convolutional Layers and Feature Maps</h2>
+<p>常规的DeepCNN都要求输入图像尺寸固定，这是因为在全连接层中要求输入固定长度的特征向量，而全连接层之前的卷积pooling层并不严格要求输入图像的尺寸固定。卷积pooling层的输出尺寸比例基本和输入图像的尺寸比例一致，这些输出就是所谓的特征图（feature map）。特征图不仅仅反映输入图像对特征响应的强度信息，还反映出空间位置信息，如图1所示，图(a)中箭头位置对应图(b)filter中响应最强烈位置，图(c)中的绿色矩形区域对图(b)的filter有强响应。</p>
+<p><center><img alt="feature-map" src="http://7nio4l.com1.z0.glb.clouddn.com/feature-map.jpg" /></center></p>
+<p><center>图1 可视化特征图</center></p>
+<h2>1.2 The Spatial Pyramid Pooling Layer</h2>
+<p>由于卷积层接受任意尺寸的输入，对应的输出也是变化的尺寸，本文中使用Spatial Pyramid Pooling Layer代替最后一层pooling层，使任意尺寸的卷积层输出经过SPP层之后，输出固定大小特征向量。如图2所示，在每一个空间块（如图中蓝色矩形中有4x4个空间块）中做pooling，每一个空间块的大小因feature map的大小而定，最后输出为k * M维向量（k为最后一层卷积层的filter数目，如图中为256，M为空间块的数目）。最后输出的固定长度向量作为全连接层的输入。</p>
+<p><center><img alt="spp-net" src="http://7nio4l.com1.z0.glb.clouddn.com/spp-net.jpg" /></center></p>
+<p><center>图2 SPP layer</center></p>
+<h2>1.3 Training the Network</h2>
+<p>给定一张输入图像后，我们可以预先计算出SPP层的相关参数。假设经过前面的卷积层之后feature map尺寸为$a * a$，对于一个有$n * n$个空间块级别的pooling，它的pooling窗口大小$win = ceiling(a/n)$，它的步长$stride = floor(a/n)$。最后将所有级别的pooling的输出连接起来作为全连接层的输入（如图2种有三个级别：4x4, 2x2, 1x1）。</p>
+<p>论文中提到了single-size训练和multi-size训练，single-size训练中输入尺寸只有一种（224 x 224）， 而multi-size训练中有两种size：（180 x 180,224 x 224）。</p>
+<h1>2. SPP-NET FOR IMAGE CLASSIFICATION</h1>
+<hr />
+<p>根据作者在ImageNet2010数据集上的图片分类实验，得到如下结论：</p>
+<ol>
+<li>
+<p>multi-size训练有助于提升准确率。</p>
+</li>
+<li>
+<p>全图有助于提升准确率。</p>
+</li>
+<li>
+<p>多级别的pooling有助于提升准确率。</p>
+</li>
+<li>
+<p>在feature map上取multi-view（multi-window），然后平均化softmax的预测分数，进一步地再加入多尺寸，同样有助于提升准确率。</p>
+</li>
+</ol>
+<h1>3. SPP-NET FOR OBJECT DETECTION</h1>
+<hr />
+<p>首先采用selective search方法产生候选窗口，将窗口映射到feature map上，在每一个候选窗口上将会产生固定大小的特征维度，以此为特征变可用于训练物体检测的二分类器。</p>
+<p><center><img alt="window" src="http://7nio4l.com1.z0.glb.clouddn.com/feature-map-window.jpg" /></center></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/11/11/spp-net.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2015/11/11/spp-net.html" data-title="论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》" data-url="http://backnode.github.io/pages/2015/11/11/spp-net.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

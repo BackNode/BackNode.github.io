@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - GradientBoost</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/09/25/GradientBoost-DTree.html">机器学习算法之Gradient Boost Decision Tree</a></h1>
+<footer class="post-info">
+        <span>2015-09-25</span>
+<span>| tags: <a href="http://backnode.github.io/tag/gradientboost.html">GradientBoost</a><a href="http://backnode.github.io/tag/decison-tree.html">decison tree</a></span>
+</footer><!-- /.post-info --><h1>0. Gradient Boost</h1>
+<hr />
+<p>在梯度下降方法中，每一次迭代分两步：第一步先找一个好的梯度方向，第二步决定在这个方向上走多远。而在<code>Gradient Boosting</code>中，同样是经过N次迭代，每次先找一个好的函数方向，然后决定在这个函数方向上走多远，如下图中$h（x_n）$即要找的函数方向，$\eta$决定在这个方向上走多远。</p>
+<p><img alt="gb" src="http://7nio4l.com1.z0.glb.clouddn.com/gradientBoosting.jpg" /></p>
+<h1>1. 推导</h1>
+<hr />
+<p>假设我们要用<code>GradientBoost</code>做回归，去L2为error measure： </p>
+<p><img alt="regression" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-for-reg.jpg" /></p>
+<p>我们先看黄色部分的优化问题，经过泰勒展开一番推导：</p>
+<p><img alt="reduction" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-reduction.jpg" /></p>
+<p>我们得到了一个问题，求一个$h$使得上式后面那项越小越好。如果我们不对$h$的大小做限制，那么最终$h$会走向无穷大或无穷小：$h(x_n) = -\propto·(S_n-y_n)$。为了避免这样的情况我们给$h(x_n)$加一个限制：</p>
+<p><img alt="reg" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-for-reg2.jpg" /></p>
+<p>所以最终这个问题就演变成了:通过对<strong>余数(residuals)</strong>($y_n-s_n$)进行回归找到一个$g_t = h$。这其实是一个简单的回归问题。</p>
+<p>找到一个好的$g_t = h$之后，下一步就是要决定在这个方向上走多远：</p>
+<p><img alt="reg3" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-for-reg3.jpg" /></p>
+<p>这实际上是一个单变量的线性回归问题。</p>
+<h1>3. Gradient Boosted Decision Tree (GBDT)</h1>
+<hr />
+<p>将决策树作为<code>base estimator</code>，把以上所有东西放在一起，就得到了<code>GBDT</code>：</p>
+<p><img alt="GBDT" src="http://7nio4l.com1.z0.glb.clouddn.com/GBDT.jpg" /></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

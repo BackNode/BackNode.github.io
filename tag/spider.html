@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - spider</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2014/11/29/python-spider-first.html">初学Python----urllib2模块与正则表达式组合而成的小爬虫</a></h1>
+<footer class="post-info">
+        <span>2014-11-29</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/spider.html">spider</a></span>
+</footer><!-- /.post-info --><p>最近开始学Python，在http://www.the5fire.com/python-sohuspider-software-people.html这个博客上看到作者写的简单的从搜狐上爬小说的爬虫，正好学习学习练练手，发现代码是几年前的，而搜狐网早已经更新了网页，原代码已经不能用了，正好我来改改。下面是改过之后的代码，亲测有效：</p>
+<div class="highlight"><pre><span class="c">#!/usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">getPage</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">offset</span> <span class="o">=</span> <span class="s">&#39;3399&#39;</span><span class="p">):</span>
+    <span class="n">realurl</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">offset</span><span class="p">,</span><span class="s">&quot;.html&quot;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">realurl</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">realurl</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="n">content_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">r&#39;&lt;div class=&quot;chapter&quot;&gt;&lt;/div&gt;\n(.*[\n])+?[\t]&lt;/div&gt;&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">content_list</span> <span class="o">=</span> <span class="n">content_re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">content</span><span class="p">,</span><span class="n">re</span><span class="o">.</span><span class="n">S</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">content_list</span>
+
+    <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">r&#39;renxingruanjian.txt&#39;</span><span class="p">,</span><span class="s">&#39;a&#39;</span><span class="p">)</span>
+
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">contentresult</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&lt;div class=&quot;chapter&quot;&gt;&lt;/div&gt;&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">contentresult</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&lt;/p&gt;&lt;p&gt;&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">contentresult</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&lt;/p&gt;&lt;/p&gt;&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">contentresult</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&lt;p&gt;&lt;p&gt;&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">contentresult</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">contentresult</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;     &#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">contentresult</span> <span class="o">=</span> <span class="n">contentresult</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;&lt;/div&gt;&#39;</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="c">#content = content.replace(&#39; &#39;,&#39;&#39;)</span>
+    <span class="c">#content = content.replace(&#39;        &#39;,&#39;&#39;)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">contentresult</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">getBook</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">startoffset</span><span class="p">,</span><span class="n">endoffset</span><span class="p">):</span>
+    <span class="k">while</span> <span class="n">startoffset</span> <span class="o">&lt;</span> <span class="n">endoffset</span><span class="p">:</span>
+        <span class="n">getPage</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">offset</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">startoffset</span><span class="p">))</span>
+        <span class="n">startoffset</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">getBook</span><span class="p">(</span><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://lz.book.sohu.com/chapter-121&#39;</span><span class="p">,</span><span class="n">startoffset</span> <span class="o">=</span> <span class="mi">3399</span><span class="p">,</span><span class="n">endoffset</span> <span class="o">=</span> <span class="mi">3426</span><span class="p">)</span>
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

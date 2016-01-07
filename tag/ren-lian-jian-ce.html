@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - 人脸检测</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2014/11/29/face-dectect.html">opencv下HaarClassifierCascade的简单人脸检测</a></h1>
+<footer class="post-info">
+        <span>2014-11-29</span>
+<span>| tags: <a href="http://backnode.github.io/tag/ren-lian-jian-ce.html">人脸检测</a><a href="http://backnode.github.io/tag/opencv.html">OpenCV</a></span>
+</footer><!-- /.post-info --><h1>opencv下HaarClassifierCascade的简单人脸检测</h1>
+<p>接触Opencv一段时间了，最近导师一直让我看人脸识别相关的东西，看了这么多大牛写的人脸识别、追踪，一直没有自己动手写过，花了点时间写了一个简单的，单目标下能识别到人脸没问题，多目标下目前没测试，理论上应该可以（多目标识别已测试，识别成功）。</p>
+<p>haar classifier cascade是opencv下自带的人脸检测的级联分类器，支持haar特征，新版本的CascadeClassifier好像支持LBP特征，没试过。</p>
+<p>PS:要配置好opencv</p>
+<p>HaarDect.h</p>
+<div class="highlight"><pre><span class="cp">#ifndef HAARDETECT_H</span>
+<span class="cp">#define HAARDETECT_H</span>
+<span class="cp">#include &lt;opencv2\highgui\highgui.hpp&gt;</span>
+<span class="cp">#include &lt;opencv2\imgproc\imgproc.hpp&gt;</span>
+<span class="cp">#include &lt;opencv2\objdetect\objdetect.hpp&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">cv</span><span class="p">;</span>
+
+<span class="n">CvHaarClassifierCascade</span><span class="o">*</span> <span class="nf">Load_Haar_Cascade</span><span class="p">();</span>
+
+<span class="kt">void</span> <span class="nf">detectFace</span><span class="p">(</span><span class="n">IplImage</span><span class="o">*</span> <span class="n">frame</span><span class="p">,</span><span class="n">CvHaarClassifierCascade</span> <span class="o">*</span><span class="n">faceCascade</span><span class="p">,</span><span class="n">CvRect</span> <span class="o">*</span><span class="n">faceRect</span><span class="p">,</span><span class="kt">int</span> <span class="o">&amp;</span><span class="n">count</span><span class="p">);</span>
+
+<span class="cp">#endif</span>
+</pre></div>
+
+
+<p>Haardetect.cpp</p>
+<div class="highlight"><pre><span class="cp">#include &quot;HaarDetect.h&quot;</span>
+<span class="cp">#include &lt;iostream&gt;</span>
+<span class="cp">#include &lt;opencv2/opencv.hpp&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="n">CvHaarClassifierCascade</span><span class="o">*</span> <span class="nf">Load_Haar_Cascade</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">CvHaarClassifierCascade</span><span class="o">*</span> <span class="n">faceCascade</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">faceCascadeFilename</span> <span class="o">=</span> <span class="s">&quot;cascades</span><span class="se">\\</span><span class="s">haarcascade_frontalface_alt.xml&quot;</span><span class="p">;</span>
+    <span class="n">faceCascade</span> <span class="o">=</span> <span class="p">(</span><span class="n">CvHaarClassifierCascade</span><span class="o">*</span><span class="p">)</span><span class="n">cvLoad</span><span class="p">(</span><span class="n">faceCascadeFilename</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">faceCascade</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;error in Load_Haar_Cascade:faceCascade is NULL&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">faceCascade</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">void</span> <span class="nf">detectFace</span><span class="p">(</span><span class="n">IplImage</span><span class="o">*</span> <span class="n">frame</span><span class="p">,</span><span class="n">CvHaarClassifierCascade</span> <span class="o">*</span><span class="n">faceCascade</span><span class="p">,</span><span class="n">CvRect</span> <span class="o">*</span><span class="n">faceRect</span><span class="p">,</span><span class="kt">int</span> <span class="o">&amp;</span><span class="n">count</span><span class="p">)</span>
+<span class="p">{</span>
+
+    <span class="k">const</span> <span class="kt">int</span> <span class="n">flag</span> <span class="o">=</span> <span class="n">CV_HAAR_DO_CANNY_PRUNING</span><span class="p">;</span>
+    <span class="n">CvSeq</span> <span class="o">*</span><span class="n">detectedFaces</span><span class="p">;</span>
+    <span class="n">CvMemStorage</span><span class="o">*</span> <span class="n">storage</span><span class="p">;</span>
+    <span class="k">const</span> <span class="kt">double</span> <span class="n">scale_factore</span> <span class="o">=</span> <span class="mf">1.1f</span><span class="p">;</span>
+    <span class="n">storage</span> <span class="o">=</span> <span class="n">cvCreateMemStorage</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">cvClearMemStorage</span><span class="p">(</span><span class="n">storage</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">faceCascade</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;error in detectFace:faceCascade is NULL!&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">IplImage</span><span class="o">*</span> <span class="n">grayFrame</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">grayFrame</span> <span class="o">=</span> <span class="n">cvCreateImage</span><span class="p">(</span><span class="n">cvGetSize</span><span class="p">(</span><span class="n">frame</span><span class="p">),</span><span class="n">IPL_DEPTH_8U</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">cvCvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="n">grayFrame</span><span class="p">,</span><span class="n">CV_RGB2GRAY</span><span class="p">);</span>
+    <span class="n">detectedFaces</span> <span class="o">=</span> <span class="n">cvHaarDetectObjects</span><span class="p">(</span><span class="n">grayFrame</span><span class="p">,</span><span class="n">faceCascade</span><span class="p">,</span><span class="n">storage</span><span class="p">,</span><span class="n">scale_factore</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="n">flag</span><span class="p">,</span><span class="n">cvSize</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">));</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">detectedFaces</span><span class="o">-&gt;</span><span class="n">total</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">detectedFaces</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;error in detectFace:detectedFaces is NULL&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="p">(</span><span class="n">detectedFaces</span><span class="o">-&gt;</span><span class="n">total</span><span class="p">);</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">faceRect</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">CvRect</span> <span class="o">*</span><span class="p">)</span><span class="n">cvGetSeqElem</span><span class="p">(</span><span class="n">detectedFaces</span><span class="p">,</span><span class="n">i</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">faceRect</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;error in detectFace:faceRect is NULL!&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">cvReleaseMemStorage</span><span class="p">(</span><span class="o">&amp;</span><span class="n">storage</span><span class="p">);</span>
+    <span class="n">cvReleaseImage</span><span class="p">(</span><span class="o">&amp;</span><span class="n">grayFrame</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>main.cpp</p>
+<div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+<span class="cp">#include &lt;windows.h&gt;</span>
+<span class="c1">//#include &lt;conio.h&gt;</span>
+<span class="cp">#include &lt;opencv2\highgui\highgui.hpp&gt;</span>
+<span class="cp">#include &lt;opencv2\imgproc\imgproc.hpp&gt;</span>
+<span class="cp">#include &lt;opencv2\objdetect\objdetect.hpp&gt;</span>
+<span class="cp">#include &quot;HaarDetect.h&quot;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">cv</span><span class="p">;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">CvCapture</span> <span class="o">*</span><span class="n">camera</span><span class="p">;</span>
+    <span class="n">CvHaarClassifierCascade</span><span class="o">*</span> <span class="n">faceCascade</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">CvRect</span> <span class="n">faceRect</span><span class="p">[</span><span class="mi">30</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">faceCount</span><span class="p">;</span>
+    <span class="n">faceCascade</span> <span class="o">=</span> <span class="n">Load_Haar_Cascade</span><span class="p">();</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">faceCascade</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">camera</span> <span class="o">=</span> <span class="n">cvCreateCameraCapture</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">camera</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;camera is NULL&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">IplImage</span> <span class="o">*</span><span class="n">frame</span><span class="p">;</span>
+    <span class="cm">/*IplImage *frame = cvCreateImage( </span>
+<span class="cm">    cvSize( cvGetCaptureProperty(camera,CV_CAP_PROP_FRAME_WIDTH),cvGetCaptureProperty(camera,CV_CAP_PROP_FRAME_HEIGHT) ),</span>
+<span class="cm">    IPL_DEPTH_8U,1);*/</span>
+    <span class="n">Sleep</span><span class="p">(</span><span class="mi">5000</span><span class="p">);</span>    <span class="c1">//wait for init the camera</span>
+    <span class="k">while</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="cm">/*faceRect = NULL;*/</span>
+        <span class="n">faceCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="n">cvQueryFrame</span><span class="p">(</span><span class="n">camera</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">frame</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="s">&quot;frame is NULL&quot;</span><span class="o">&lt;&lt;</span><span class="n">endl</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">detectFace</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="n">faceCascade</span><span class="p">,</span><span class="n">faceRect</span><span class="p">,</span><span class="n">faceCount</span><span class="p">);</span>
+        <span class="c1">//if(faceRect == NULL)</span>
+        <span class="c1">//{</span>
+        <span class="c1">//  exit(1);</span>
+        <span class="c1">//}</span>
+        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">faceCount</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">cvRectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="n">cvPoint</span><span class="p">(</span><span class="n">faceRect</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="p">,</span><span class="n">faceRect</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="p">),</span><span class="n">cvPoint</span><span class="p">(</span><span class="n">faceRect</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">x</span><span class="o">+</span><span class="n">faceRect</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">width</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">faceRect</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">y</span><span class="o">+</span><span class="n">faceRect</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">height</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">CV_RGB</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">cvNamedWindow</span><span class="p">(</span><span class="s">&quot;Camera&quot;</span><span class="p">,</span><span class="n">CV_WINDOW_AUTOSIZE</span><span class="p">);</span>
+        <span class="n">cvShowImage</span><span class="p">(</span><span class="s">&quot;Camera&quot;</span><span class="p">,</span><span class="n">frame</span><span class="p">);</span>
+        <span class="n">cvWaitKey</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">destroyAllWindows</span><span class="p">();</span>
+    <span class="n">cvReleaseCapture</span><span class="p">(</span><span class="o">&amp;</span><span class="n">camera</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

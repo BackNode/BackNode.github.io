@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - deepLearning</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/07/13/gender_classify.html">深度学习之训练一个人脸性别分类器</a></h1>
+<footer class="post-info">
+        <span>2015-07-13</span>
+<span>| tags: <a href="http://backnode.github.io/tag/deeplearning.html">deepLearning</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a><a href="http://backnode.github.io/tag/gender-classify.html">gender classify</a><a href="http://backnode.github.io/tag/cnn.html">CNN</a></span>
+</footer><!-- /.post-info --><h1>0. Whatever</h1>
+<hr />
+<p>深度学习越来越火，人人都能玩！</p>
+<p>在本文中我将通过深度学习方法训练一个性别分类器，即给定一张人脸图像，判断其性别。</p>
+<p>本文使用的深度学习框架：基于<a href="http://deeplearning.net/software/theano/">Theano</a>的<a href="http://keras.io/">Keras</a>（github:<a href="https://github.com/fchollet/keras">keras</a>）</p>
+<h1>1. Data Preprocess</h1>
+<hr />
+<p>数据来源：互联网明星图片。男性照片25个类，共3690张；女性照片15个类，共4309张。所有图片经过<strong>人脸检测对齐归一化</strong>到141*165尺寸大小。样例如下：</p>
+<p><img alt="female-face" src="http://7nio4l.com1.z0.glb.clouddn.com/female-face.jpg" /></p>
+<p>生成图片路径和label文件格式如下：</p>
+<div class="highlight"><pre><span class="o">...</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38243</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38244</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38246</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">female</span>\<span class="mi">163</span>\<span class="mi">38249</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">0</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">male</span>\<span class="mi">1</span>\<span class="mi">107</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">1</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">male</span>\<span class="mi">1</span>\<span class="mi">10</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">1</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">male</span>\<span class="mi">1</span>\<span class="mi">114</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">1</span>
+<span class="n">E</span><span class="p">:</span>\<span class="n">face</span> <span class="n">data</span>\<span class="n">gender_pic</span>\<span class="n">male</span>\<span class="mi">1</span>\<span class="mi">117</span><span class="n">_big</span><span class="o">.</span><span class="n">jpg</span><span class="p">,</span><span class="mi">1</span>
+<span class="o">...</span>
+</pre></div>
+
+
+<p>本文中用到的数据集存在很多不足：类别太少、年龄分布不均匀等等，但是不管怎么样，先跑起来再说。下面通过csv文件载入所有人脸图片和label信息，<code>shuffle</code>并划分训练集和测试集。</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils</span> <span class="kn">import</span> <span class="n">shuffle</span>
+
+<span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">csv_file</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">line</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span>
+            <span class="n">img</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r</span><span class="p">))</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">b</span><span class="p">))</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="mi">141</span><span class="o">*</span><span class="mi">165</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">shuffle</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">55</span><span class="p">)</span>
+<span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">57</span><span class="p">)</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">165</span><span class="p">)</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">165</span><span class="p">)</span>
+
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">X_train</span> <span class="o">/=</span> <span class="mi">255</span>
+<span class="n">X_test</span> <span class="o">/=</span> <span class="mi">255</span>
+
+<span class="c"># convert class vectors to binary class matrices</span>
+<span class="n">Y_train</span> <span class="o">=</span> <span class="n">np_utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">nb_classes</span><span class="p">)</span>
+<span class="n">Y_test</span> <span class="o">=</span> <span class="n">np_utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">nb_classes</span><span class="p">)</span>
+</pre></div>
+
+
+<h1>2. Network Architecture</h1>
+<hr />
+<p><strong>四个卷积层加上两个全连接层</strong>，实际上这是一个比较大的模型，在数据集较小的情况下很容易过拟合，但是有很多防止过拟合的手段值得我们探究。</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.layers.core</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Flatten</span>
+<span class="kn">from</span> <span class="nn">keras.layers.convolutional</span> <span class="kn">import</span> <span class="n">Convolution2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span>
+
+<span class="n">nb_classes</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Convolution2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">border_mode</span><span class="o">=</span><span class="s">&#39;full&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">poolsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Convolution2D</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">poolsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Convolution2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">border_mode</span><span class="o">=</span><span class="s">&#39;full&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">poolsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Convolution2D</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">poolsize</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Flatten</span><span class="p">())</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">80</span><span class="o">*</span><span class="mi">8</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">((</span><span class="mi">1000</span><span class="p">,)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;relu&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">BatchNormalization</span><span class="p">((</span><span class="mi">1000</span><span class="p">,)))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">nb_classes</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;softmax&#39;</span><span class="p">))</span>
+</pre></div>
+
+
+<h1>3. 训练与测试模型</h1>
+<hr />
+<p>训练卷积神经网络涉及很多名词，下面一一简单介绍：</p>
+<p><strong>梯度下降流</strong>：一种类似于下山的优化方法，每更新一次模型就相当于往前走一步，通过梯度计算前进方向，这样一步一步逼近山谷（即最优点）。</p>
+<p><strong>mini-batch</strong>：在神经网络的训练中，数据集往往比较大（几万张甚至几百万张图片），如果按照传统方法遍历完所有数据后计算梯度然后再更新模型的话会非常慢，因此才有了mini-batch方法，即将数据集分为一个个小batch，每遍历完一个batch更新一次模型，更新完所有batch为一次迭代。</p>
+<p><strong>momentum</strong>：顾名思义，给梯度下降流一个动量，或者说是加速度</p>
+<p>$$v(t) = \alpha v(t-1) - \beta \frac{\partial E}{\partial w}(t)$$</p>
+<p>其中$\alpha$是momentum factor（略小于1），$\beta$是learning rate.</p>
+<p>引入momentum可以使训练过程加速度过平坦区域和阻尼振荡区域，并允许我们使用更大的学习率。</p>
+<p><strong>Adagrad</strong>：一种自适应的基于梯度下降流的更新梯度方法，好处是不用自己调整学习率和momentum。但是这种方法对初始参数及其对应的梯度很敏感。</p>
+<p><img alt="adagrad" src="http://7nio4l.com1.z0.glb.clouddn.com/adagrad.jpg" /></p>
+<p><strong>Adadelta</strong>：在Adagrad方法上的继续改进，解决了Adagrad方法对初始参数敏感的问题。</p>
+<p><img alt="RMS" src="http://7nio4l.com1.z0.glb.clouddn.com/RMS.jpg" /></p>
+<p><img alt="adadelta" src="http://7nio4l.com1.z0.glb.clouddn.com/adadelta.jpg" /></p>
+<p><strong>early stop</strong>:在训练过程中，一旦模型性能超过patience（自设参数）次数没有提高，那么我们可以认为模型开始过拟合了，此时可以停止继续训练。</p>
+<p><strong>batch normalization</strong>:简单的说，这个方法就是<em>normalizing layer inputs</em>。好处是不仅可以使模型加速收敛，还能起到<em>regularizer</em>的作用。</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">SGD</span><span class="p">,</span> <span class="n">Adadelta</span><span class="p">,</span> <span class="n">Adagrad</span>
+<span class="kn">from</span> <span class="nn">keras.utils</span> <span class="kn">import</span> <span class="n">np_utils</span><span class="p">,</span> <span class="n">generic_utils</span>
+<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">EarlyStopping</span>
+<span class="kn">from</span> <span class="nn">keras.layers.normalization</span> <span class="kn">import</span> <span class="n">BatchNormalization</span>
+
+<span class="n">opt</span> <span class="o">=</span> <span class="n">Adadelta</span><span class="p">()</span>
+
+<span class="n">fname</span> <span class="o">=</span> <span class="s">&#39;gender_best_weights.hdf5&#39;</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;load weights successful!&quot;</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">opt</span><span class="p">)</span>
+
+<span class="k">print</span> <span class="s">&quot;X_train shape: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;y_train shape: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;X_test shape: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;y_test shape: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Y_test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">checkpointer</span> <span class="o">=</span> <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">nb_epoch</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">show_accuracy</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">Y_test</span><span class="p">),</span> <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">checkpointer</span><span class="p">,</span> <span class="n">early_stop</span><span class="p">])</span>
+
+<span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">Y_test</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">show_accuracy</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Test score: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+</pre></div>
+
+
+<h1>4. 结果</h1>
+<hr />
+<p>共迭代49次，在第29次迭代得到best model，在测试集上的准确率是<strong>91.6%</strong>。</p>
+<blockquote>
+<p>1600/1600 [==============================] - 20s - loss: 0.3370 - acc.: 0.9163</p>
+<p>Test score: (0.33696633219718936, 0.91625000000000001)</p>
+</blockquote>
+<p>显然还有很多可以提升的地方，有时间继续改进。</p>
+<p>源代码在这里：<a href="https://github.com/BackNode/gender_cnn_keras">戳我</a></p>
+<h1>参考文献</h1>
+<ol>
+<li>
+<p>Batch normalization: Accelerating deep network training by reducing internal covariate shift</p>
+</li>
+<li>
+<p>ADADELTA: An adaptive learning rate method</p>
+</li>
+</ol><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

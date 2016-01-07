@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - decision tree</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/04/30/decision-tree.html">机器学习算法之决策树（decision tree）</a></h1>
+<footer class="post-info">
+        <span>2015-04-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/decision-tree.html">decision tree</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a></span>
+</footer><!-- /.post-info --><h1>modeling</h1>
+<p>先简单地举一个例子，看看什么是决策树。以下是一棵分类树，决定下班后是否要观看机器学习公开课。</p>
+<p><img alt="DT" src="http://keepcodingblog.qiniudn.com/DT-1.jpg" /></p>
+<p>我们可以看到从根节点开始往下会有分支，最终会走向叶子节点，得到分类结果。每一个非叶子节点都是一个特征，上图中共有三维特征。决策树是所有机器算法中与人脑处理问题方式最接近的算法，所以很好理解。一棵决策树可以被抽象成以下数学公式：</p>
+<p><img alt="DTmodel" src="http://keepcodingblog.qiniudn.com/DTmodel.jpg" /></p>
+<p>T是路径总数/叶子节点总数（上图中有6个叶子节点），<code>g_t(x)</code>是<code>base hypothesis</code>，上图中是常量<code>Y/N</code>，<code>q_t(x)</code>可以理解成<code>g_t(x)</code>的权重，取值为1或0：</p>
+<div class="highlight"><pre><span class="n">is</span> <span class="n">x</span> <span class="n">on</span> <span class="n">path</span> <span class="n">t</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+</pre></div>
+
+
+<p>我们也可以用递归的视角来看决策树：</p>
+<p><img alt="recursiveDTmodel" src="http://keepcodingblog.qiniudn.com/RecursiveDTmodel.jpg" /></p>
+<p><code>G_c(x)</code>是当前节点的子树：</p>
+<div class="highlight"><pre><span class="n">tree</span> <span class="o">=</span> <span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">sub</span><span class="o">-</span><span class="n">trees</span><span class="p">)</span>
+</pre></div>
+
+
+<h1>构建一棵决策树</h1>
+<p>按照以下伪代码我们可以递归式地构建一棵决策树：</p>
+<div class="highlight"><pre><span class="n">function</span> <span class="nf">DecisionTree</span><span class="p">(</span><span class="n">data</span> <span class="n">D</span> <span class="o">=</span> <span class="p">{(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">...</span> <span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">N</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">N</span><span class="p">])})</span><span class="o">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">termination</span> <span class="n">criteria</span> <span class="n">met</span><span class="p">)</span><span class="o">:</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="n">hypothesis</span> <span class="kt">g_t</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+    <span class="k">else</span><span class="o">:</span>
+        <span class="n">learn</span> <span class="n">branching</span> <span class="n">criteria</span> <span class="n">b</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>   <span class="c1">//b(x)决定如何将数据分支</span>
+        <span class="n">split</span> <span class="n">D</span> <span class="n">to</span> <span class="n">C</span> <span class="n">parts</span> <span class="n">D_c</span> <span class="o">=</span> <span class="p">{(</span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">n</span><span class="p">])</span> <span class="o">:</span> <span class="n">b</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">c</span><span class="p">}</span>  <span class="c1">//按照b(x)分支</span>
+        <span class="n">build</span> <span class="n">sub</span><span class="o">-</span><span class="nl">tree</span><span class="p">:</span> <span class="n">G_c</span> <span class="o">=</span> <span class="n">DecisionTree</span><span class="p">(</span><span class="n">D_c</span><span class="p">)</span>   <span class="c1">//构建子树</span>
+        <span class="k">return</span> <span class="n">G</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">=</span> <span class="n">sum</span><span class="p">([</span><span class="n">b</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">==</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">G_c</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="c1">//返回父树</span>
+</pre></div>
+
+
+<p>在上面的伪代码中，尚有四个问题没有解决：</p>
+<ol>
+<li>
+<p>number of branches C （分支数目）</p>
+</li>
+<li>
+<p>base hypothesis （<code>g_t(x)</code> )</p>
+</li>
+<li>
+<p>branching criteria b(x) （如何分支）</p>
+</li>
+<li>
+<p>termination criteria （终止条件）</p>
+</li>
+</ol>
+<h1>classification and regression tree (C&amp;RT)</h1>
+<p>第一个问题分支数目C：一般来说<code>C=2</code>，构建一棵二叉树，这是个简单的选择。</p>
+<p>第二个问题<code>base hypothesis</code>：对于分类或回归两种情况，我们可以简单的采取投票或取平均值(vote / average)的形式。</p>
+<p>第三个问题如何分支：这是决策树的关键点，如何选取最有效的特征划分数据集。下面从两个角度聊聊分支。</p>
+<h2>信息熵</h2>
+<p>在第一个问题已经解决的情况下，简单地说就是要将数据集划分为两部分，划分数据集的大原则是：将无序的数据变得更加有序。我们可以使用多种方法划分数据集，但是每种方法都有各自的优缺点。组织杂乱无章数据的一种方法就是使用信息论度量信息，信息论是量化处理信息的分支科学。我们可以在划分数据<strong>之前</strong>和<strong>之后</strong>使用信息论量化度量信息的内容。</p>
+<p>在划分数据集之前之后信息发生的变化称为信息增益(information gain)，获得信息增益最高的特征就是最好的选择。集合信息的的度量方式成为<strong>香农熵(entropy)</strong>。熵定义为信息的期望值，在明晰这个概念之前，我们必须知道信息的定义。如果待分类的事物可能划分在多个类别之中，则符号<code>x[i]</code>的信息定义为：</p>
+<p><img alt="$$log2(1/p(x[i]))$$" src="http://keepcodingblog.qiniudn.com/DT-information.jpg" /></p>
+<p>其中<code>p(x[i])</code>是选择该分类的概率。</p>
+<p>为了计算熵，我们需要计算所有类别所有可能值包含的信息期望值，通关过下面的公式得到：</p>
+<p><img alt="$$H = ∑p(x[i])log2(1/p(x[i]))$$" src="http://keepcodingblog.qiniudn.com/DT-shang.jpg" /></p>
+<p>数据越有序，熵越小；相反熵越大。得到熵之后，我们就可以按照获取最大信息增益的方法划分数据集。</p>
+<h2>Purifying</h2>
+<p>通俗的讲，分支就是要使分开后的数据集纯度(purity)比较高：</p>
+<p><img alt="bx" src="http://keepcodingblog.qiniudn.com/DT-bx.jpg" /></p>
+<p>|Dc with h|指划分后的数据集的权重，所以$b(x)$就是要使划分后数据集的权重不纯度最小。</p>
+<p>对于回归和分类的情况，我们可以分别用<code>regression error</code>和<code>classification error</code>来计算不纯度：</p>
+<p><img alt="impurity-1" src="http://keepcodingblog.qiniudn.com/DT-impurity.jpg" /></p>
+<p>对于分类的情况，我们还有更多的选择，比如说gini index：</p>
+<p><img alt="impurity-2" src="http://keepcodingblog.qiniudn.com/DT-impurity2.jpg" /></p>
+<p>第四个问题termination criteria，当以下任一条件满足时，就可以终止了：</p>
+<ol>
+<li>
+<p>所有的<code>y[n]</code>都相同：<code>impurity = 0</code>，即<code>g_t(x) = y[n]</code></p>
+</li>
+<li>
+<p>所有的<code>x[n]</code>都相同：no decision stumps</p>
+</li>
+</ol>
+<p>当这四个问题解决之后，C&amp;RT决策树算法就出来了：</p>
+<p><img alt="basic-DT" src="http://keepcodingblog.qiniudn.com/basic-dt.jpg" /></p>
+<h1>剪枝 （Regularization by Pruning）</h1>
+<p>一棵完全树极易过拟合，因此我们需要一个正则项来防止过拟合：</p>
+<p><code>Ω(G) = NumberOfLeaves(G)</code></p>
+<p>我们通过限制叶子节点数目来对决策树进行剪枝。所以最终的<code>cost function</code>是这样的：</p>
+<p><img alt="costFunction" src="http://keepcodingblog.qiniudn.com/cost-function.jpg" /></p>
+<p>但是显然我们不能枚举出所有可能的G，那样计算量会非常大，通常是这样做的：</p>
+<ol>
+<li>
+<p><code>G(0) =  fully-grown tree</code></p>
+</li>
+<li>
+<p><code>G(i) = argmin E_in(G) such that G is one-leaf removed from G(i-1)</code></p>
+</li>
+</ol>
+<p>举个例子，假设现在有一棵有10个叶子节点的树，去掉一个叶子节点，得到10棵有9个叶子节点的树，在这10棵树中，选一棵<code>E_in(G)</code>（training error）最小的树，在这棵树的基础上继续去掉叶子节点，直到满足条件为止。</p>
+<h1>处理缺失数据</h1>
+<p>在训练的时候，决策树会保存一些分支的替代分支，替代分支的划分效果会尽可能的接近原来的分支效果。这样，在测试阶段如果我们遇到用来分支的特征正好是缺失数据，就可以用替代分支来代替原来的分支，巧妙地避开了缺失数据且对结果的影响最小。这也是决策树的一大优点：<strong>轻松处理缺失数据</strong>。</p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

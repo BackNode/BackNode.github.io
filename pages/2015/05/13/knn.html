@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>机器学习算法之K近邻（k nearest neighbors）</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2015/05/13/knn.html" rel="bookmark"
+           title="Permalink to 机器学习算法之K近邻（k nearest neighbors）">机器学习算法之K近邻（k nearest neighbors）</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2015-05-13</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/knn.html">knn</a><a href="http://backnode.github.io/tag/machine-learning.html">machine learning</a></span>
+</footer><!-- /.post-info -->      <h1>1. K近邻算法</h1>
+<p>什么是K近邻算法？简单的说就是：给定所有训练数据和一组测试数据之后，在训练数据中寻找离这组测试数据最近的K组邻居，根据这K组邻居的label来做voting/average，从而预测出测试数据的label。</p>
+<p><img alt="knn-sample" src="http://keepcodingblog.qiniudn.com/knn-sample.png" /></p>
+<p>如上图所示，绿色圆圈是测试数据，其余为训练数据。假设<code>K == 3</code>，即寻找离测试数据最近的三个邻居，如图中黑色实线圆中的三个邻居(两个红色三角形，一个蓝色正方形)。在这三个邻居中，少数服从多数，所以测试数据就被分类为红色三角形。假设<code>K == 5</code>，那虚线圆中的5个邻居就是离测试数据最近的5个邻居，里面有三个蓝色正方形和2个红色三角形，所以少数服从多数，测试数据被分类为蓝色正方形。</p>
+<h1>2. 距离度量</h1>
+<p>那么如何找到最近的K个邻居呢？换句话说，如何度量样本之间的距离？</p>
+<p>最常用的距离度量方式自然是<strong>欧式距离</strong>，类似的还有<strong>马氏距离</strong>。本质上来说，寻找最近的邻居无非就是寻找最相似的邻居，所以<strong>余弦相似度</strong>这类相似度度量方式也完全可以在此处使用。</p>
+<h1>3. Search algorithms</h1>
+<p>接下来介绍查找最近K个邻居的算法：Brute Force， K-D tree。</p>
+<h2>3.1 Brute Force</h2>
+<p>最直观最暴力的算法，直接计算测试数据和所有训练数据的距离，对距离排序取前K个，即最近的K个邻居。这个算法缺点很明显：计算量大，效率低。对于N个D维的samples，Brute Force方法的效率是$O(DN^2)$</p>
+<p>决定了查找算法之后我们就可以着手简单的实现k近邻算法了，此处以欧式距离和Brute Force算法距离，python实现如下：</p>
+<div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="c"># encoding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<span class="k">class</span> <span class="nc">KnnClassifier</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_neighbors</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;train data array_shape mismatch&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="n">X</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="k">def</span> <span class="nf">_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_X</span>
+        <span class="n">y_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+        <span class="n">dist_l2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">X_train</span> <span class="o">-</span> <span class="n">X</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sorted_index</span> <span class="o">=</span> <span class="n">dist_l2</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">y_train</span><span class="p">[</span><span class="n">sorted_index</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">]])</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">y_pred</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="n">X_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_X</span>
+        <span class="n">y_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+        <span class="k">if</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;test data array_shape mismatch&#39;</span><span class="p">)</span>
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">y_train</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">y_pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">y_pred</span>
+</pre></div>
+
+
+<h2>3.2 k-d tree</h2>
+<p>为了解决Brute Force算法的计算效率问题，人们发明了很多基于树的数据结构。这些数据结构可以帮助我们减少要计算的距离数量。核心思想如下：如果点A距离点B很远，而点B距离点C很近，那么我们可以知道点A距离点C也会很远，因此就不必再精准地计算点A和点C的距离。运用这一点，我们可以将K近邻算法的计算效率提高到$O(DNlog(N))$甚至更好。</p>
+<h3>3.2.1 构建KD树</h3>
+<p>早期的利用这一点的算法是KD树（K-dimensional tree），本质上它就是一棵二叉树，如果你了解<a href="http://backnode.github.io/pages/2015/04/30/decision-tree.html">决策树模型</a>的话，会发现两者构建二叉树的过程很像。在决策树模型中，构建二叉树时我们会用到训练数据的特征和labels，分支时也是根据数据的labels不纯度进行分支；然而在这里构建KD树时我们只用到了训练数据的特征，并没有用到训练数据的labels，那么我们如何进行<strong>分支</strong>呢？</p>
+<p><strong>对于所有训练数据，计算它们在每个特征维度上的数据方差，取方差最大的那一维作为分支参考，方差最大意味着在该维度上数据最分散，在这个维度上进行分支有较好的分辨率。</strong></p>
+<p>确定了分支参考维之后，接下来按照分支参考维对所有数据排序，取中间的数据作为分支节点，在分支参考维上小于分支节点的划入左子树，其余的划入右子树。</p>
+<p>然后左右子树分别递归构建KD树，直到不能分支为止。整个过程伪代码如下：</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">CreateKDTree</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> 
+        <span class="k">return</span>
+    <span class="n">leftData</span><span class="p">,</span> <span class="n">rightData</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">CreateKDTree</span><span class="p">(</span><span class="n">leftData</span><span class="p">)</span>
+    <span class="n">CreateKDTree</span><span class="p">(</span><span class="n">rightData</span><span class="p">)</span>
+</pre></div>
+
+
+<p>下图是一个KD树划分二维数据的实例：</p>
+<p><img alt="kdtree-2d" src="http://keepcodingblog.qiniudn.com/kdtree-2d.png" /></p>
+<h3>3.2.2 KD树最近邻搜索</h3>
+<p>构建好KD树后，我们看看如何在KD树上查找目标点t的最近邻居。</p>
+<ol>
+<li>进行二叉查找，取叶子节点作为当前最近邻点。如果以目标点t为圆心，目标点t与当前最近邻点的距离为半径的圆没有超过切割超平面，则查找结束，如下图。否则进入第二步。</li>
+</ol>
+<p><img alt="kd-2" src="http://keepcodingblog.qiniudn.com/kdtree-2d-2.png" /></p>
+<ol>
+<li>回溯查找。进入第一步中与圆相交的空间查找，看是否存在比当前最近邻点更近的点，若存在则更新为最近邻点，继续按照步骤1递归式查找，如下图：</li>
+</ol>
+<p><img alt="kd-3" src="http://keepcodingblog.qiniudn.com/kdtree-2d-3.png" /></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/05/13/knn.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2015/05/13/knn.html" data-title="机器学习算法之K近邻（k nearest neighbors）" data-url="http://backnode.github.io/pages/2015/05/13/knn.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

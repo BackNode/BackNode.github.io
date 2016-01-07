@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - ML</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+                <section id="content" class="body">
+                    <ol id="posts-list" class="hfeed" start="9">
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2014/12/09/pca-svd.html" rel="bookmark"
+                           title="Permalink to 机器学习笔记--主成分分析(PCA)与奇异值分解">机器学习笔记--主成分分析(PCA)与奇异值分解</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2014-12-09</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/machinelearning.html">MachineLearning</a></span>
+</footer><!-- /.post-info -->                <h2>特征值分解与奇异值分解</h2>
+<p><img alt="svd-1" src="http://keepcodingblog.qiniudn.com/svd-1.png" /></p>
+<p><img alt="svd-2" src="http://keepcodingblog.qiniudn.com/svd-2.png" /></p>
+<h2>PCA</h2>
+<p>PCA的作用主要是分析数据主成分，降低数据维度，方便计算。数据降到1、2、3维之后还可以可视化。在对数据执行PCA处理之前要对数据进行<strong>预处理</strong>，使每个特征维度上的数据具有相同均值并归一化到同一范围内。</p>
+<div class="highlight"><pre><span class="c">#feature scaling</span>
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="n">train_norm</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span><span class="mi">1</span><span class="p">::])</span>
+<span class="n">test_norm</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>主成分个数的选择</h2>
+<p>一般来说，我们根据方差百分比来选择要保留的主成分个数。如我们要保留99%的方差（以下示例为matlab代码）：</p>
+<div class="highlight"><pre><span class="p">[</span><span class="n">u</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">v</span><span class="p">]</span> <span class="p">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="n">k</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c">% Set k accordingly</span>
+<span class="n">eigenvalues</span> <span class="p">=</span> <span class="nb">diag</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="n">current_var</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">total_var</span> <span class="p">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">);</span>
+<span class="k">while ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2014/12/09/pca-svd.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2014/11/30/linear-regression.html" rel="bookmark"
+                           title="Permalink to 机器学习笔记--线性回归">机器学习笔记--线性回归</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2014-11-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/ji-qi-xue-xi.html">机器学习</a></span>
+</footer><!-- /.post-info -->                <p>线性回归模型是机器学习中最简单的一个有监督学习模型，所谓<strong>有监督学习</strong>，就是在给出的训练数据样本中已经标定了样本的目标信息(如类别，预测值)，算法模型通过学习这些数据样本，得到能较好的应用于未标定类别数据样本的模型参数。
+线性回归模型根据一个样本的输入特征给出这个样本的目标值/预测值，
+<img alt="举个例子" src="http://keepcodingblog.qiniudn.com/%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90.jpg" /></p>
+<p>我们要根据房子的面积和房间数预测房子的房价，如下表</p>
+<p><img alt="房子" src="http://keepcodingblog.qiniudn.com/%E6%88%BF%E5%AD%90.jpg" /></p>
+<p>首先，给出一个初始的线性函数：</p>
+<p><img alt="初始线性函数" src="http://keepcodingblog.qiniudn.com/linear-model-1.jpg" /></p>
+<p>其中‘theta下标i’是该线性函数从X映射到Y的参数（或者说是权重）。我们可以将X0看作1，所以：</p>
+<p><img alt="函数2" src="http://keepcodingblog.qiniudn.com/linear-model-2.jpg" /></p>
+<p>在等式的右边，theta和x均为向量。
+定义价值函数(cost function)：</p>
+<p><img alt="公式3" src="http://keepcodingblog.qiniudn.com/linear-model-3.jpg" /></p>
+<p>其中'X上标i'表示第i组输入数据，我们用J(theta)来衡量：对于每一组theta的值，它得出的预测值和实际上的y的值的接近程度。</p>
+<h2>最小二乘法（LMS）</h2>
+<p>我们要得到一组theta值使得J(theta)能最小化，可以使用梯度下降法(gradient descent)：从某个初始theta值开始，然后重复改变theta使J(theta)更小，直到收敛：</p>
+<p><img alt="公式4" src="http://keepcodingblog.qiniudn.com/linear-model-4.png" /></p>
+<p>:=表示赋值，alpha是学习因子，在实际中调整。
+我们先考虑只有一个训练实例时 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2014/11/30/linear-regression.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2014/11/30/logistic-regression.html" rel="bookmark"
+                           title="Permalink to 机器学习笔记--逻辑斯蒂回归(logistic regression)">机器学习笔记--逻辑斯蒂回归(logistic regression)</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2014-11-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/ji-qi-xue-xi.html">机器学习</a></span>
+</footer><!-- /.post-info -->                <h2>logistic</h2>
+<p>logistic regression实际上不是一个回归器，而是一个二分类器，即：给定的训练样本中一部分被标记为1（positive），剩下的被标记为0（negative），我们从这些样本中训练出一个分类器，给定输入特征（x），此分类器能够输出它预测的x的类别y，此时输出y只有两种情况：0和1.
+先看一下logistic函数：</p>
+<p><img alt="logistic函数" src="http://keepcodingblog.qiniudn.com/logistic%E5%87%BD%E6%95%B0.png" /></p>
+<p>下面是它的曲线图：</p>
+<p><img alt="logistic曲线图" src="http://keepcodingblog.qiniudn.com/logistics%E5%9B%BE%E7%89%87.png" /></p>
+<p>下面给出我们的logistic regression函数模型：</p>
+<p><img alt="逻辑回归函数模型" src="http://keepcodingblog.qiniudn.com/logistic%E5%87%BD%E6%95%B0%E6%A8%A1%E5%9E%8B.png" /></p>
+<p>这个模型是这样工作的：
+当h(x)输出值大于等于0.5时，预测x的类别为1；
+当h(x)输出值小于0.5时，预测x的类别为0。
+在这个函数模型中，x是输入，theta是我们要通过训练样本求的参数，求出theta之后我们就可以用这个模型去分类了。
+那我们如何从训练样本中求出theta呢？
+我们需要一个cost function，下面给出sklearn库中logisticRegression的实现使用的cost function：</p>
+<p><img alt="logisticRegressionCostFunction" src="http://keepcodingblog.qiniudn.com/logisticRegressionCostFunction.png" /></p>
+<p>上下两个式子分别采用L2和L1方法进行regularization,防止模型<strong>过拟合</strong>。
+式子左边是regularization term；右边是分类错误惩罚项；参数C权衡两者，实验中经验值，后面会讲到在实际中如何选取C。
+得到cost function之后我们的目标就是选出一组参数theta使costFunction最小 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2014/11/30/logistic-regression.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+        <a href="http://backnode.github.io/category/ml.html">&laquo;</a>
+    Page 2 / 2
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - AdaBoost</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/09/25/AdaBoost-DTree.html">机器学习算法之Adaptive Boosted Decision Tree</a></h1>
+<footer class="post-info">
+        <span>2015-09-25</span>
+<span>| tags: <a href="http://backnode.github.io/tag/adaboost.html">AdaBoost</a><a href="http://backnode.github.io/tag/decison-tree.html">decison tree</a></span>
+</footer><!-- /.post-info --><h1>0. 前言</h1>
+<hr />
+<p>先回忆一下， 在<a href="http://backnode.github.io/pages/2015/04/23/random-forest.html">随机森林</a>中， 用<code>bagging</code> + <code>decision tree</code>训练了一堆小决策树，然后用投票的方式将这些树组合起来形成随机森林：</p>
+<p><img alt="rf" src="http://7nio4l.com1.z0.glb.clouddn.com/rf.jpg" /></p>
+<p><strong>那么<code>AdaBoost</code>是否也可以与决策树结合呢？</strong></p>
+<h1>1. Weighted Decision Tree Algorithm</h1>
+<hr />
+<p>在<a href="http://backnode.github.io/pages/2015/04/30/decision-tree.html">决策树</a>中，对于输入数据是平等对待的，也就是说所有数据的权重是一样的。那么如果我们想要一个可以<strong>接受权重的决策树</strong>$DTree(\mathcal{D},u^{(t)})$，该怎么做呢？</p>
+<p>第一个方法就是修改决策树内部的<code>error function</code>，使每一个样本的error值乘上对应的权重：</p>
+<p><img alt="error" src="http://7nio4l.com1.z0.glb.clouddn.com/weightedDT-error.jpg" /></p>
+<p>但是这个方法要修改算法内部，更多的时候我们希望把决策树当成一个黑盒子。所以第二个方法就是在输入数据上动手脚：<strong>按照权重比例对数据进行采样</strong>。即权重更大的数据有更高的概率被采到。</p>
+<p><img alt="sampling" src="http://7nio4l.com1.z0.glb.clouddn.com/adaBoostDT-sampling.jpg" /></p>
+<h1>2. AdaBoost</h1>
+<hr />
+<p>简单的说AdaBoost是将一堆<code>estimators</code>线性组合起来，现在我们的<code>base estimator</code>是决策树，剩下要决定的就是每棵决策树的权重$\alpha_t$：</p>
+<p>$$\alpha_t = ln\sqrt{（1-\epsilon_t） / \epsilon_t}$$</p>
+<p>其中$\epsilon_t$是对应决策树的<code>weighted error rate</code>。这样error越大的树占的权重就越小。</p>
+<p>但是如果有一颗在所有数据集上<code>fully growned</code>的树，它的$\epsilon_t$是0，那么对应的$\alpha_t$就是无穷大，这显然不是我们想要的结果。所以有两个措施需要采取来避免这种<em>独裁</em>情况：</p>
+<ol>
+<li>
+<p>pruned：对决策树进行剪枝（限制树的高度）</p>
+</li>
+<li>
+<p>sampling：对数据进行部分采样，用于训练<code>base estimator</code></p>
+</li>
+</ol>
+<h1>3. AdaBoost Decision Tree</h1>
+<hr />
+<p>所以，总结起来以下就是<code>AdaBoost Decision Tree</code>：</p>
+<p><img alt="AdaBoost Decision Tree" src="http://7nio4l.com1.z0.glb.clouddn.com/AdaBoostDecisionTree-1.jpg" /></p>
+<p><img alt="AdaBoost Decision Tree" src="http://7nio4l.com1.z0.glb.clouddn.com/AdaBoostDecisionTree.jpg" /></p>
+<h1>4. Weights of AdaBoost</h1>
+<hr />
+<p>那么问题来了，如何更新权重$u^{(t)}$呢？</p>
+<p><img alt="weights" src="http://7nio4l.com1.z0.glb.clouddn.com/AdaBoost-weights.jpg" /></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

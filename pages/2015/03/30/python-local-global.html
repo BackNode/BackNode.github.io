@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>python学习--locals globals</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li class="active"><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2015/03/30/python-local-global.html" rel="bookmark"
+           title="Permalink to python学习--locals globals">python学习--locals globals</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2015-03-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a></span>
+</footer><!-- /.post-info -->      <h1>python学习--locals globals</h1>
+<h2>locals() and globals()</h2>
+<p><code>locals()</code>和<code>globals()</code>是python的两个内置函数，它们提供了基于dictionary的访问局部和全局变量的方式。
+<code>locals()</code>返回一个名字/值对的dictionary。这个dictionary的键字是字符串形式的变量名字，diction的值是变量的实际值。</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">12</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="n">num</span> <span class="o">=</span> <span class="mi">90</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="nb">locals</span><span class="p">()</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="nb">locals</span><span class="p">()[</span><span class="s">&#39;arg&#39;</span><span class="p">]</span>
+    <span class="o">...</span><span class="p">:</span>     
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">13</span><span class="p">]:</span> <span class="n">func</span><span class="p">(</span><span class="s">&#39;hello&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="s">&#39;num&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s">&#39;arg&#39;</span><span class="p">:</span> <span class="s">&#39;hello&#39;</span><span class="p">}</span>
+<span class="n">hello</span>
+</pre></div>
+
+
+<p><code>globals()</code>函数则返回包含全局变量的dictionary，在下例中，<code>operation()</code>函数根据<code>oper</code>变量的值自动调用相应的全局函数：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">3</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">plus</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">return</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span>
+   <span class="o">...</span><span class="p">:</span> 
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">minus</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">return</span> <span class="n">a</span><span class="o">-</span><span class="n">b</span>
+   <span class="o">...</span><span class="p">:</span> 
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">operation</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="n">oper</span> <span class="o">=</span> <span class="s">&#39;plus&#39;</span> <span class="k">if</span> <span class="n">oper</span><span class="o">==</span><span class="s">&#39;+&#39;</span> <span class="k">else</span> <span class="s">&#39;minus&#39;</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">return</span> <span class="n">globasl</span><span class="p">()[</span><span class="n">oper</span><span class="p">](</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+   <span class="o">...</span><span class="p">:</span> 
+<span class="n">In</span> <span class="p">[</span><span class="mi">7</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">operation</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="n">oper</span> <span class="o">=</span> <span class="s">&#39;plus&#39;</span> <span class="k">if</span> <span class="n">oper</span><span class="o">==</span><span class="s">&#39;+&#39;</span> <span class="k">else</span> <span class="s">&#39;minus&#39;</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">oper</span><span class="p">](</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+   <span class="o">...</span><span class="p">:</span> 
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">8</span><span class="p">]:</span> <span class="n">operation</span><span class="p">(</span><span class="s">&#39;+&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">8</span><span class="p">]:</span> <span class="mi">5</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="n">operation</span><span class="p">(</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Out</span><span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="o">-</span><span class="mi">1</span>
+</pre></div>
+
+
+<p><strong>locals是只读的，globals不是</strong></p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">15</span><span class="p">]:</span> <span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="n">num</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="nb">locals</span><span class="p">()</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="nb">locals</span><span class="p">()[</span><span class="s">&#39;num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span> <span class="c">#无法修改num</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="s">&quot;num =&quot;</span><span class="p">,</span><span class="n">num</span>
+    <span class="o">...</span><span class="p">:</span>     
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">16</span><span class="p">]:</span> <span class="n">func</span><span class="p">()</span>
+<span class="p">{</span><span class="s">&#39;num&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+<span class="n">num</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">18</span><span class="p">]:</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">7</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">19</span><span class="p">]:</span> <span class="k">print</span> <span class="s">&quot;x =&quot;</span><span class="p">,</span><span class="n">x</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">7</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">20</span><span class="p">]:</span> <span class="nb">globals</span><span class="p">()[</span><span class="s">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span> <span class="c">#可以修改x</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">21</span><span class="p">]:</span> <span class="k">print</span> <span class="s">&quot;x =&quot;</span><span class="p">,</span><span class="n">x</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">8</span>
+</pre></div>
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/03/30/python-local-global.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2015/03/30/python-local-global.html" data-title="python学习--locals globals" data-url="http://backnode.github.io/pages/2015/03/30/python-local-global.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

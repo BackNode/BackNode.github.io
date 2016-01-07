@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - 机器学习</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2014/11/30/linear-regression.html">机器学习笔记--线性回归</a></h1>
+<footer class="post-info">
+        <span>2014-11-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/ji-qi-xue-xi.html">机器学习</a></span>
+</footer><!-- /.post-info --><p>线性回归模型是机器学习中最简单的一个有监督学习模型，所谓<strong>有监督学习</strong>，就是在给出的训练数据样本中已经标定了样本的目标信息(如类别，预测值)，算法模型通过学习这些数据样本，得到能较好的应用于未标定类别数据样本的模型参数。
+线性回归模型根据一个样本的输入特征给出这个样本的目标值/预测值，
+<img alt="举个例子" src="http://keepcodingblog.qiniudn.com/%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90.jpg" /></p>
+<p>我们要根据房子的面积和房间数预测房子的房价，如下表</p>
+<p><img alt="房子" src="http://keepcodingblog.qiniudn.com/%E6%88%BF%E5%AD%90.jpg" /></p>
+<p>首先，给出一个初始的线性函数：</p>
+<p><img alt="初始线性函数" src="http://keepcodingblog.qiniudn.com/linear-model-1.jpg" /></p>
+<p>其中‘theta下标i’是该线性函数从X映射到Y的参数（或者说是权重）。我们可以将X0看作1，所以：</p>
+<p><img alt="函数2" src="http://keepcodingblog.qiniudn.com/linear-model-2.jpg" /></p>
+<p>在等式的右边，theta和x均为向量。
+定义价值函数(cost function)：</p>
+<p><img alt="公式3" src="http://keepcodingblog.qiniudn.com/linear-model-3.jpg" /></p>
+<p>其中'X上标i'表示第i组输入数据，我们用J(theta)来衡量：对于每一组theta的值，它得出的预测值和实际上的y的值的接近程度。</p>
+<h2>最小二乘法（LMS）</h2>
+<p>我们要得到一组theta值使得J(theta)能最小化，可以使用梯度下降法(gradient descent)：从某个初始theta值开始，然后重复改变theta使J(theta)更小，直到收敛：</p>
+<p><img alt="公式4" src="http://keepcodingblog.qiniudn.com/linear-model-4.png" /></p>
+<p>:=表示赋值，alpha是学习因子，在实际中调整。
+我们先考虑只有一个训练实例时，化简：</p>
+<p><img alt="公式5" src="http://keepcodingblog.qiniudn.com/linear-model-5.png" /></p>
+<p>所以得到：</p>
+<p><img alt="公式6" src="http://keepcodingblog.qiniudn.com/linear-model-6.png" /></p>
+<p>这就是最小二乘法或Widrow-Hoff学习规则。
+以上只是在一个训练实例的情况下，我们要考虑所有m个训练实例，有两种修改方法使之适用于一个训练集。
+第一种：</p>
+<p><img alt="公式7" src="http://keepcodingblog.qiniudn.com/linear-model-7.png" /></p>
+<p>这个方法每迭代一次就要遍历所有训练样例一次，这就是批量梯度下降法(batch gradient descent)。
+第二种：</p>
+<p><img alt="此处输入图片的描述" src="http://keepcodingblog.qiniudn.com/linear-model-9.png" /></p>
+<p>在这个算法中我们遍历了整个训练集，每使用一个训练样例，便仅根据这单个样例的结果修改参数。这个算法叫做随机梯度下降(stochastio gradient descent)或增量梯度下降(incremental gradient descent)。</p>
+<p>通过以上两种方法计算出参数 之后我们便得到了最初的线性方程：</p>
+<p><img alt="公式8" src="http://keepcodingblog.qiniudn.com/linear-model-8.png" /></p>
+<p>便可以根据这个方程预测出相应房屋面积和房间数的房价。</p>
+<h2>正则方程组法</h2>
+<p>在笔记一中我们用了梯度下降法来求出使价值函数 最小化的参数 的值，而使用另外一种正则方程组方法同样可以做到，而且不需要反复迭代。在这个方法中我们用价值函数J(theta)对theta求导，使之为0 。要达到这个目的，我们先介绍几个矩阵性质。</p>
+<h3>矩阵推导</h3>
+<p>我们定义函数f对矩阵A的求导为：</p>
+<p><img alt="矩阵1" src="http://keepcodingblog.qiniudn.com/matrix.png" /></p>
+<p>所以上式左边的梯度自身是一个m*n的矩阵。
+再引入tr操作符，即线性代数中的“迹”。对于一个矩阵A，它的迹：</p>
+<p><img alt="矩阵2" src="http://keepcodingblog.qiniudn.com/matrix-2.png" /></p>
+<p>如果a是一个实数，那么tr a = a。如果AB是一个方阵，那么</p>
+<p><img alt="矩阵3" src="http://keepcodingblog.qiniudn.com/matrix-3.png" /></p>
+<p>以此类推：</p>
+<p><img alt="矩阵4" src="http://keepcodingblog.qiniudn.com/matrix-4.png" /></p>
+<p><img alt="矩阵5" src="http://keepcodingblog.qiniudn.com/matrix-5.png" /></p>
+<p><img alt="矩阵6" src="http://keepcodingblog.qiniudn.com/matrix-6.png" /></p>
+<h3>最小二乘法回顾</h3>
+<p><img alt="1" src="http://keepcodingblog.qiniudn.com/%E4%BA%8C%E4%B9%98%E6%B3%951.png" />
+<img alt="2" src="http://keepcodingblog.qiniudn.com/%E4%BA%8C%E4%B9%98%E6%B3%952.png" /></p>
+<h2>python实现</h2>
+<p>在python中有很多库可以直接拿来用，这里我们用到了numpy，scikit-learn，建议各位安装<a href="http://continuum.io/downloads">anaconda</a>，轻轻松松一下装好各种科学计算库。</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
+<span class="kn">import</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">as</span> <span class="nn">prepro</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">cross_validation</span> <span class="k">as</span> <span class="n">cv</span>
+<span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;read data into numpy array</span>
+<span class="sd">        return a numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">split_data</span><span class="p">(</span><span class="n">X_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;split the data as test_data and train_data</span>
+<span class="sd">        return X_train, X_test, y_train, y_test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">cv</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">X_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;ex1data2.txt&#39;</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">scaler</span> <span class="o">=</span> <span class="n">prepro</span><span class="o">.</span><span class="n">StandardScaler</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>  <span class="n">y_test</span> <span class="o">=</span> <span class="n">split_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">regr</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LinearRegression</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">regr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;regr&#39;s coef:&quot;</span><span class="p">,</span> <span class="n">regr</span><span class="o">.</span><span class="n">coef_</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;score on test data:&quot;</span><span class="p">,</span> <span class="n">regr</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
+    <span class="n">example1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1650</span><span class="p">,</span><span class="mi">3</span><span class="p">]])</span>
+    <span class="n">example1</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">example1</span><span class="p">)</span>
+    <span class="n">example1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">example1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Predicted price of a 1650 sq-ft, 3 br house:&quot;</span><span class="p">,</span><span class="n">regr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">example1</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+
+<p>数据在这里：<a href="http://keepcodingblog.qiniudn.com/ex1data2.txt">ex1data2.txt</a></p>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2014/11/30/logistic-regression.html" rel="bookmark"
+                           title="Permalink to 机器学习笔记--逻辑斯蒂回归(logistic regression)">机器学习笔记--逻辑斯蒂回归(logistic regression)</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2014-11-30</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/ji-qi-xue-xi.html">机器学习</a></span>
+</footer><!-- /.post-info -->                <h2>logistic</h2>
+<p>logistic regression实际上不是一个回归器，而是一个二分类器，即：给定的训练样本中一部分被标记为1（positive），剩下的被标记为0（negative），我们从这些样本中训练出一个分类器，给定输入特征（x），此分类器能够输出它预测的x的类别y，此时输出y只有两种情况：0和1.
+先看一下logistic函数：</p>
+<p><img alt="logistic函数" src="http://keepcodingblog.qiniudn.com/logistic%E5%87%BD%E6%95%B0.png" /></p>
+<p>下面是它的曲线图：</p>
+<p><img alt="logistic曲线图" src="http://keepcodingblog.qiniudn.com/logistics%E5%9B%BE%E7%89%87.png" /></p>
+<p>下面给出我们的logistic regression函数模型：</p>
+<p><img alt="逻辑回归函数模型" src="http://keepcodingblog.qiniudn.com/logistic%E5%87%BD%E6%95%B0%E6%A8%A1%E5%9E%8B.png" /></p>
+<p>这个模型是这样工作的：
+当h(x)输出值大于等于0.5时，预测x的类别为1；
+当h(x)输出值小于0.5时，预测x的类别为0。
+在这个函数模型中，x是输入，theta是我们要通过训练样本求的参数，求出theta之后我们就可以用这个模型去分类了。
+那我们如何从训练样本中求出theta呢？
+我们需要一个cost function，下面给出sklearn库中logisticRegression的实现使用的cost function：</p>
+<p><img alt="logisticRegressionCostFunction" src="http://keepcodingblog.qiniudn.com/logisticRegressionCostFunction.png" /></p>
+<p>上下两个式子分别采用L2和L1方法进行regularization,防止模型<strong>过拟合</strong>。
+式子左边是regularization term；右边是分类错误惩罚项；参数C权衡两者，实验中经验值，后面会讲到在实际中如何选取C。
+得到cost function之后我们的目标就是选出一组参数theta使costFunction最小 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2014/11/30/logistic-regression.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

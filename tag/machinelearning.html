@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - MachineLearning</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2014/12/09/pca-svd.html">机器学习笔记--主成分分析(PCA)与奇异值分解</a></h1>
+<footer class="post-info">
+        <span>2014-12-09</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/machinelearning.html">MachineLearning</a></span>
+</footer><!-- /.post-info --><h2>特征值分解与奇异值分解</h2>
+<p><img alt="svd-1" src="http://keepcodingblog.qiniudn.com/svd-1.png" /></p>
+<p><img alt="svd-2" src="http://keepcodingblog.qiniudn.com/svd-2.png" /></p>
+<h2>PCA</h2>
+<p>PCA的作用主要是分析数据主成分，降低数据维度，方便计算。数据降到1、2、3维之后还可以可视化。在对数据执行PCA处理之前要对数据进行<strong>预处理</strong>，使每个特征维度上的数据具有相同均值并归一化到同一范围内。</p>
+<div class="highlight"><pre><span class="c">#feature scaling</span>
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="n">train_norm</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="mi">0</span><span class="p">::,</span><span class="mi">1</span><span class="p">::])</span>
+<span class="n">test_norm</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>主成分个数的选择</h2>
+<p>一般来说，我们根据方差百分比来选择要保留的主成分个数。如我们要保留99%的方差（以下示例为matlab代码）：</p>
+<div class="highlight"><pre><span class="p">[</span><span class="n">u</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">v</span><span class="p">]</span> <span class="p">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">x</span><span class="p">);</span>
+<span class="n">k</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c">% Set k accordingly</span>
+<span class="n">eigenvalues</span> <span class="p">=</span> <span class="nb">diag</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="n">current_var</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">total_var</span> <span class="p">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">);</span>
+<span class="k">while</span> <span class="n">current_var</span> <span class="o">&lt;</span> <span class="mf">0.99</span> <span class="o">*</span> <span class="n">total_var</span>
+    <span class="n">k</span> <span class="p">=</span> <span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+    <span class="n">current_var</span> <span class="p">=</span> <span class="n">current_var</span> <span class="o">+</span> <span class="n">eigenvalues</span><span class="p">(</span><span class="n">k</span><span class="p">);</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<h2>白化（whiten）</h2>
+<p>白化操作是要减少数据之间的相关性，具体操作是对降维之后的每一维特征除以其标准差，这样每一维特征的方差就相等了。</p>
+<p><img alt="whiten" src="http://keepcodingblog.qiniudn.com/whiten.png" /></p>
+<h2>python</h2>
+<p>以下代码将训练集和测试集降至12维，并进行了白化处理。</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">decomposition</span>
+<span class="k">def</span> <span class="nf">decomposition_pca</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Linear dimensionality reduction &quot;&quot;&quot;</span>
+    <span class="n">pca</span> <span class="o">=</span> <span class="n">decomposition</span><span class="o">.</span><span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">whiten</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">train_pca</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
+    <span class="n">test_pca</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">train_pca</span><span class="p">,</span> <span class="n">test_pca</span>
+</pre></div>
+
+
+<h2>参考</h2>
+<p><a href="http://blog.chinaunix.net/uid-24517893-id-3261160.html">http://blog.chinaunix.net/uid-24517893-id-3261160.html</a></p>
+<p><a href="http://deeplearning.stanford.edu/wiki/index.php/%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90">http://deeplearning.stanford.edu/wiki/index.php/%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90</a></p>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

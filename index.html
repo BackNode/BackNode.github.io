@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2016/01/07/k-vim-readme.html">（转）来自wklken的k-vim说明</a></h1>
+<footer class="post-info">
+        <span>2016-01-07</span>
+<span>| tags: <a href="http://backnode.github.io/tag/vim.html">vim</a><a href="http://backnode.github.io/tag/black-magic.html">black magic</a></span>
+</footer><!-- /.post-info --><p>注：本文来自<a href="https://github.com/wklken/k-vim">k-vim</a>9.0的README.md，k-vim更新9.1后的readme去除了很多详细操作说明，故有此文，以下均为转载内容。</p>
+<hr />
+<h1>k-vim</h1>
+<blockquote>
+<p>VERSION: 9.0</p>
+<p>LAST_UPDATE_TIME: 2015-05-02</p>
+<p>本次更新: 更强大的搜索, 快速运行等</p>
+</blockquote>
+<p>详细 <a href="https://github.com/wklken/k-vim/blob/master/UPDATE_LOG.md">更新日志</a></p>
+<h1>目标</h1>
+<blockquote>
+<p>Just a Better Vim Config. Keep it Simple.</p>
+</blockquote>
+<div class="highlight"><pre>0. 保持简单
+1. 结构划分良好, 中文注释
+2. 高度可配置修改
+3. 一键安装少折腾
+4. 更加符合直觉的键位操作(*)
+</pre></div>
+
+
+<p>适用人群：</p>
+<div class="highlight"><pre>有一定基础的 vimer
+</pre></div>
+
+
+<p>PS: 服务器端不带插件<code>k-vim</code>的简化版本(curl直接设置vimrc即可), 有需要可以直接安装<a href="https://github.com/wklken/vim-for-server">vim-for-server</a></p>
+<h3>k-vim使用说明</h3>
+<ol>
+<li>
+<p>最好能熟练使用原生vim各类操作之后, 再来使用插件扩展</p>
+</li>
+<li>
+<p><code>fork</code>一份(需要的话顺带<code>star</code>关注更新), 然后参照安装步骤进行安装, 可以根据自身习惯进行自定义修改</p>
+</li>
+<li>
+<p>目前主要关注后端<code>python</code>, <code>golang</code>以及将要入坑的<code>ruby</code>, 偶尔写写<code>js/jquery</code>, 但是主体配置基本是通用的. 可以根据语言体系自己加配置(vimrc.bundles)</p>
+</li>
+<li>
+<p>插件不是越多越好, 二八定律</p>
+</li>
+<li>
+<p>欢迎大家推荐好用的资源, 不限于插件/主题/ppt/文章/视频等, 也希望大家能一起完善这份配置</p>
+</li>
+</ol>
+<h2>疑问解决步骤</h2>
+<p>你遇到的问题,一定别人也遇到了</p>
+<ol>
+<li>首先明确问题, 可以用<code>二分法</code>排查出问题的插件或配置语句</li>
+<li>确认按照文档步骤执行的操作</li>
+<li>如果是对应插件的问题, 请到插件github主页查看文档及issues</li>
+<li>google大法</li>
+<li>提issues</li>
+</ol>
+<hr />
+<hr />
+<h1>截图</h1>
+<p>solarized主题</p>
+<p><img alt="solarized" src="https://github.com/wklken/gallery/blob/master/vim/solarized.png?raw=true" /></p>
+<p>molokai主题</p>
+<p><img alt="molokai" src="https://github.com/wklken/gallery/blob/master/vim/molokai.png?raw=true" /></p>
+<hr />
+<hr />
+<h1>安装步骤</h1>
+<ol>
+<li>
+<p>clone到本地,配置到linux个人目录（如果是从linux_config过来的，不需要clone）</p>
+<div class="highlight"><pre>git clone https://github.com/wklken/k-vim.git
+</pre></div>
+
+
+</li>
+<li>
+<p>安装依赖包</p>
+<div class="highlight"><pre># ctags, ag(the_silver_searcher)
+
+2.1 系统依赖
+
+# ubuntu
+sudo apt-get install ctags
+sudo apt-get install build-essential cmake python-dev  #编译YCM自动补全插件依赖
+sudo apt-get install silversearcher-ag
+
+# centos
+sudo yum install python-devel.x86_64
+sudo yum groupinstall &#39;Development Tools&#39;
+sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+sudo yum install the_silver_searcher
+
+# mac
+brew install ctags
+brew install the_silver_searcher
+
+2.2 使用Python
+sudo pip install pyflakes
+sudo pip install pylint
+sudo pip install pep8
+
+2.3 如果使用Javascript, 不需要的跳过
+# 安装jshint和jslint,用于javascript语法检查
+# 需要nodejs支持,各个系统安装见文档 https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
+
+#ubuntu
+sudo apt-get install nodejs npm
+sudo npm install -g jslint
+sudo npm install jshint -g
+
+#mac
+brew install node
+npm install jshint -g
+npm install jslint -g
+</pre></div>
+
+
+</li>
+<li>
+<p>安装</p>
+<div class="highlight"><pre>3.1 进入目录
+# 注意原先装过的童鞋, 重装时，不要到~/.vim下执行(这是软连接指向k-vim真是目录)，必须到k-vim原生目录执行
+
+cd k-vim/
+
+3.2 执行安装
+# 会进入安装插件的列表，目前30+个插件，一一安装是从github clone的，完全取决于网速, 之后会自动编译 YCM, 编译失败的话需要手动编译, 见第4步
+
+sh -x install.sh
+</pre></div>
+
+
+</li>
+<li>
+<p>可能遇到的问题:</p>
+<ul>
+<li>编译自动补全YouCompleteMe(耗时略长, 但绝对值得)<div class="highlight"><pre>cd ~/.vim/bundle/YouCompleteMe
+./install.sh --clang-completer
+</pre></div>
+
+
+</li>
+</ul>
+<p>有任何问题见YCM<a href="https://github.com/Valloric/YouCompleteMe">文档</a></p>
+<p>这个插件需要Vim 7.3.584,所以,如果vim版本太低,需要<a href="https://github.com/Valloric/YouCompleteMe/wiki/Building-Vim-from-source">编译安装</a></p>
+<ul>
+<li>相对行号</li>
+</ul>
+<p>vimrc中配置,如果不习惯,可以去掉,<a href="http://jeffkreeftmeijer.com/2012/relative-line-numbers-in-vim-for-super-fast-movement/">相关参考</a></p>
+<ul>
+<li>配置主题</li>
+</ul>
+<p>到vimrc中修改colortheme,可以使用molokai(用惯sublimetext2的童鞋很熟悉)</p>
+<p>默认配置的是<a href="https://github.com/altercation/vim-colors-solarized">solarized dark主题</a></p>
+<p>想要修改终端配色为solarized可以参考 <a href="https://github.com/sigurdga/gnome-terminal-colors-solarized">这里</a></p>
+<ul>
+<li>Go语言不能自动补全/tagbar</li>
+</ul>
+<p>依赖 <a href="https://github.com/jstemmer/gotags">gotags</a>和 <a href="https://github.com/nsf/gocode">gocode</a>, 需要安装配置好, 并-&gt; <code>$GOPATH</code> -&gt; <code>$PATH</code>, <code>which</code>命令能正确返回</p>
+<div class="highlight"><pre>which gotags
+which gocode
+</pre></div>
+
+
+<ul>
+<li>
+<p>Javascript不能自动补全
+<code>vimrc.bundles</code>中<code>marijnh/tern_for_vim</code>默认没有打开, 需要打开安装插件, 需要依赖nodejs&amp;npm, 具体见文档 <a href="https://github.com/marijnh/tern_for_vim">tern_for_vim</a></p>
+</li>
+<li>
+<p>Macvim</p>
+<div class="highlight"><pre>安装最新mac vim ,可以正常打开
+
+需要sudo
+mv /usr/bin/vim /usr/bin/vim.bk
+ln -s /usr/local/bin/mvim /usr/bin/vim
+
+在.bashrc/.bash_profile中加入
+    alias vi=&#39;mvim -v&#39;
+    alias vim=&#39;mvim -v&#39;
+</pre></div>
+
+
+</li>
+<li>
+<p>其他问题: 键位/展现等存在问题, 使用<code>二分法</code>缩小范围, 排查到问题根源, 修改配置</p>
+</li>
+</ul>
+</li>
+<li>
+<p>安装/卸载/更新插件：</p>
+<p>安装新插件</p>
+<div class="highlight"><pre>1. vimrc.bundles中配置对应插件
+    Bundle &#39;xxx/xxxx&#39;
+2. 命令行模式，执行:
+    :BundleInstall
+</pre></div>
+
+
+<p>更新插件(注意如果YCM更新, 可能需要重编译, 否则自动补全可能失效)</p>
+<div class="highlight"><pre>命令行模式，执行:
+:BundleUpdate
+</pre></div>
+
+
+<p>删除插件</p>
+<div class="highlight"><pre>1. vimrc.bundles中注释或删除对应插件bundle配置行(行首加一个双引号)
+2.命令行模式，执行: (会物理上删除插件文件)
+    :BundleClean
+</pre></div>
+
+
+</li>
+</ol>
+<hr />
+<hr />
+<h1>自定义快捷键</h1>
+<div class="highlight"><pre>注意<span class="p">,</span> 以下 <span class="sb">`,`</span> 代表<span class="o">&lt;</span>leader<span class="o">&gt;</span>
+<span class="m">1.</span> 可以自己修改vimrc中配置，决定是否开启鼠标
+
+set mouse<span class="o">-=</span>a           <span class="s">&quot; 鼠标暂不启用, 键盘党....</span>
+<span class="s">set mouse=a            &quot;</span> 开启鼠标
+
+<span class="m">2.</span> 退出vim后，内容显示在终端屏幕<span class="p">,</span> 可以用于查看和复制<span class="p">,</span> 如果不需要可以关掉
+   好处：误删什么的，如果以前屏幕打开，可以找回<span class="m">.</span><span class="kc">...</span>惨痛的经历
+
+set t_ti<span class="o">=</span> t_te<span class="o">=</span>
+
+<span class="m">3.</span> 可以自己修改vimrc决定是否使用方向键进行上下左右移动，默认关闭，强迫自己用 hjkl，可以注解
+hjkl  上下左右
+
+map <span class="o">&lt;</span>Left<span class="o">&gt;</span> <span class="o">&lt;</span>Nop<span class="o">&gt;</span>
+map <span class="o">&lt;</span>Right<span class="o">&gt;</span> <span class="o">&lt;</span>Nop<span class="o">&gt;</span>
+map <span class="o">&lt;</span>Up<span class="o">&gt;</span> <span class="o">&lt;</span>Nop<span class="o">&gt;</span>
+map <span class="o">&lt;</span>Down<span class="o">&gt;</span> <span class="o">&lt;</span>Nop<span class="o">&gt;</span>
+
+<span class="m">4.</span> 上排<span class="bp">F</span>功能键
+
+F1 废弃这个键<span class="p">,</span>防止调出系统帮助
+F2 set nu<span class="o">/</span>nonu<span class="p">,</span>行号开关，用于鼠标复制代码用
+F3 set <span class="kt">list</span><span class="o">/</span>nolist<span class="p">,</span>显示可打印字符开关
+F4 set wrap<span class="o">/</span>nowrap<span class="p">,</span>换行开关
+F5 set <span class="kp">paste</span><span class="o">/</span>nopaste<span class="p">,</span>粘贴模式paste_mode开关<span class="p">,</span>用于有格式的代码粘贴
+F6 syntax on<span class="o">/</span>off<span class="p">,</span>语法开关，关闭语法可以加快大文件的展示
+
+F9 tagbar
+F10 运行当前文件<span class="p">(</span>quickrun<span class="p">)</span>
+
+<span class="m">5.</span> 分屏移动
+
+ctrl <span class="o">+</span> j<span class="o">/</span>k<span class="o">/</span>h<span class="o">/</span>l   进行上下左右窗口跳转<span class="p">,</span>不需要ctrl<span class="o">+</span>w<span class="o">+</span>jkhl
+
+<span class="m">6.</span> 搜索
+<span class="o">&lt;</span>space<span class="o">&gt;</span> 空格，进入搜索状态
+<span class="o">/</span>       同上
+<span class="p">,</span><span class="o">/</span>      去除匹配高亮
+
+<span class="p">(</span>交换了<span class="c1">#/* 号键功能, 更符合直觉, 其实是离左手更近)</span>
+<span class="c1">#       正向查找光标下的词</span>
+<span class="o">*</span>       反向查找光标下的词
+
+优化搜索保证结果在屏幕中间
+
+<span class="m">7.</span> tab操作<span class="p">(</span>重点推<span class="p">)</span>
+ctrl<span class="o">+</span>t 新建一个tab
+
+<span class="p">(</span>hjkl<span class="p">)</span>
+<span class="p">,</span>th    切第<span class="m">1</span>个tab
+<span class="p">,</span>tl    切最后一个tab
+<span class="p">,</span>tj    下一个tab
+<span class="p">,</span>tk    前一个tab
+
+<span class="p">,</span>tn    下一个tab<span class="p">(</span><span class="kr">next</span><span class="p">)</span>
+<span class="p">,</span>tp    前一个tab<span class="p">(</span>previous<span class="p">)</span>
+
+<span class="p">,</span>td    关闭tab
+<span class="p">,</span>te    tabedit
+<span class="p">,</span>tm    tabm
+
+<span class="p">,</span><span class="m">1</span>     切第<span class="m">1</span>个tab
+<span class="p">,</span><span class="m">2</span>     切第<span class="m">2</span>个tab
+<span class="kc">...</span>
+<span class="p">,</span><span class="m">9</span>     切第<span class="m">9</span>个tab
+<span class="p">,</span><span class="m">0</span>     切最后一个tab
+
+<span class="p">,</span>tt 最近使用两个tab之间切换
+<span class="p">(</span>可修改配置位 ctrl<span class="o">+</span>o<span class="p">,</span>  但是ctrl<span class="o">+</span>o<span class="o">/</span>i为系统光标相关快捷键<span class="p">,</span> 故不采用<span class="p">)</span>
+
+<span class="m">8.</span> buffer操作<span class="p">(</span>不建议<span class="p">,</span> 建议使用ctrlspace插件来操作<span class="p">)</span>
+<span class="p">[</span>b    前一个buffer
+<span class="p">]</span>b    后一个buffer
+<span class="o">&lt;-</span>    前一个buffer
+<span class="o">-&gt;</span>    后一个buffer
+
+
+<span class="m">9.</span> 按键修改
+Y         <span class="o">=</span>y<span class="o">$</span>   复制到行尾
+U         <span class="o">=</span>Ctrl<span class="o">-</span>r
+<span class="p">,</span>sa       select <span class="kp">all</span><span class="p">,</span>全选
+<span class="p">,</span>v        选中段落
+kj        代替<span class="o">&lt;</span>Esc<span class="o">&gt;</span>，不用到角落去按esc了
+
+<span class="p">,</span>q     <span class="o">:</span><span class="kp">q</span>，退出vim
+
+ctrl<span class="o">+</span>n    相对<span class="o">/</span>绝对行号切换
+<span class="o">&lt;</span>enter<span class="o">&gt;</span>   normal模式下回车选中当前项
+
+
+
+更多优化<span class="o">:</span>
+    <span class="m">1.</span> j<span class="o">/</span>k 对于换行展示移动更友好
+    <span class="m">2.</span> HL 修改成 <span class="o">^$</span><span class="p">,</span> 更方便在同行移动
+    <span class="m">3.</span> <span class="p">;</span> 修改成 <span class="o">:</span> ，一键进入命令行模式，不需要按shift
+    <span class="m">4.</span> 命令行模式 ctrl<span class="o">+</span>a<span class="o">/</span>e 到开始结尾
+    <span class="m">5.</span> <span class="o">&lt;</span>和<span class="o">&gt;</span> 代码缩进后自动再次选中<span class="p">,</span> 方便多次缩进<span class="p">,</span> esc退出
+    <span class="m">6.</span> 对py文件，保存自动去行尾空白，打开自动加行首代码
+    <span class="m">7.</span> 交换<span class="c1">#/*号功能,#号为正向查找,*反向</span>
+    <span class="m">8.</span> <span class="sb">`w!!`</span>强制保存<span class="p">,</span> 即使readonly
+    <span class="m">9.</span> 去掉错误输入提示
+    <span class="m">10.</span> 交换`和<span class="s">&#39;, &#39;</span>能跳转到准确行列位置
+    <span class="m">11.</span> python<span class="o">/</span>ruby 等<span class="p">,</span> 保存时自动去行尾空白
+    <span class="m">12.</span> 统一所有分屏打开的操作位v<span class="o">/</span>s<span class="p">[</span>nerdtree<span class="o">/</span>ctrlspace<span class="p">]</span> <span class="p">(</span>特殊ctrlp ctrl<span class="o">+</span>v<span class="o">/</span>x<span class="p">)</span>
+    <span class="m">13.</span> <span class="sb">`,zz`</span>       代码折叠toggle
+</pre></div>
+
+
+<hr />
+<hr />
+<h1>插件部分</h1>
+<blockquote>
+<p>基础</p>
+</blockquote>
+<ol>
+<li>
+<h4>插件管理 <a href="https://github.com/gmarik/vundle">gmarik/vundle</a></h4>
+<p>必装,用于管理所有插件
+命令行模式下管理命令:</p>
+<div class="highlight"><pre>:BundleInstall     install
+:BundleInstall!    update
+:BundleClean       remove plugin not in list
+</pre></div>
+
+
+</li>
+<li>
+<h4>多语言语法检查 <a href="https://github.com/scrooloose/syntastic">scrooloose/syntastic</a></h4>
+<p>建议安装，静态语法及风格检查,支持多种语言</p>
+<p>修改了下标记一列的背景色,原有的背景色在solarized下太难看了…..</p>
+<div class="highlight"><pre>,s  列出/隐藏当前文件所有错误列表
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="syntastic" src="https://github.com/wklken/gallery/blob/master/vim/syntastic.png?raw=true" /></p>
+</li>
+</ol>
+<blockquote>
+<p>自动补全</p>
+</blockquote>
+<ol>
+<li>
+<h4>代码自动补全 <a href="https://github.com/Valloric/YouCompleteMe">Valloric/YouCompleteMe</a></h4>
+<p>必装，强烈推荐(YCM是我目前用到的最好的自动补全插件)</p>
+<p>这个插件包含了以下几个插件功能,所以不需要装下面:</p>
+<div class="highlight"><pre>clang_complete
+AutoComplPop
+Supertab
+neocomplcache
+jedi(对python的补全)
+</pre></div>
+
+
+<p>敲两个字符后弹出提示, 支持各语言标准库补全</p>
+<p>快捷键:</p>
+<div class="highlight"><pre>ctrl+j 选择下一个补全
+ctrl+k 选择上一个补全
+
+ctrl+n 选择下一个补全
+ctrl+p 选择上一个补全
+回车    选中
+,jd  跳转到函数定义, 分屏打开一个buffer(非常有用!!!!!!!!!)
+,gd  跳到声明位置, 仅 filetypes: c, cpp, objc, objcpp, python 有效(比较少用)
+</pre></div>
+
+
+<p>演示(官方截图)</p>
+<p><img alt="ycm" src="https://camo.githubusercontent.com/1f3f922431d5363224b20e99467ff28b04e810e2/687474703a2f2f692e696d6775722e636f6d2f304f50346f6f642e676966" /></p>
+</li>
+<li>
+<h4>代码片段快速插入 <a href="https://github.com/SirVer/ultisnips">SirVer/ultisnips</a> +<a href="https://github.com/honza/vim-snippets">honza/vim-snippets</a></h4>
+<p>必装，效率杀手锏，快速插入自定义的代码片段, 高效必备</p>
+<p>YCM 自动补全会弹提示</p>
+<div class="highlight"><pre>ctrl+j 上一个
+ctrl+k 下一个
+
+ctrl+n 上一个
+ctrl+p 下一个
+&lt;tab&gt;  使用片段 -&gt; expand to codes
+,us    编辑对应文件类型的代码片段
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="ultisnips" src="https://github.com/wklken/gallery/blob/master/vim/utilsnips.gif?raw=true" /></p>
+</li>
+<li>
+<h4>引号配对补全 <a href="https://github.com/Raimondi/delimitMate">Raimondi/delimitMate</a></h4>
+<p>必装，输入引号,括号时,自动补全</p>
+<p>对python的docstring 三引号做了处理(只处理""", '''暂时没配，可以自己加)</p>
+<p>演示</p>
+<p><img alt="delimitmate" src="https://github.com/wklken/gallery/blob/master/vim/delimate.gif?raw=true" /></p>
+<p>附:同类插件 <a href="https://github.com/kana/vim-smartinput">kana/vim-smartinput</a></p>
+</li>
+<li>
+<h4>html/xml标签配对补全 <a href="https://github.com/docunext/closetag.vim">docunext/closetag.vim</a></h4>
+</li>
+</ol>
+<blockquote>
+<p>快速编码</p>
+</blockquote>
+<ol>
+<li>
+<h4>快速注释 <a href="https://github.com/scrooloose/nerdcommenter">scrooloose/nerdcommenter</a></h4>
+<p>必装，另一个大大提升效率的地方，快速批量加减注释[会自动补一个空格]</p>
+<div class="highlight"><pre>[d] shift+v+方向键选中(默认当前行)
+    -&gt; ,cc      加上注释
+    -&gt; ,cu      解开注释
+    -&gt; ,c&lt;space&gt; 加上/解开注释
+    -&gt; ,cy      先复制再注解, p可以粘贴未注释前的代码
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="nerdcommenter" src="https://github.com/wklken/gallery/blob/master/vim/nerdcomment.gif?raw=true" /></p>
+<p>附:注释还有其他两种插件可选<a href="https://github.com/tomtom/tcomment_vim">tcomment</a> 和<a href="https://github.com/tpope/vim-commentary">tpope/vim-commentary</a></p>
+</li>
+<li>
+<h4>快速编辑 <a href="https://github.com/tpope/vim-surround">tpope/vim-surround</a> +<a href="https://github.com/tpope/vim-repeat">tpope/vim-repeat</a></h4>
+<p>必装，很给力的功能，快速给词加环绕符号,例如引号, 注意(括号, 左括号会加空格, 右括号不会)</p>
+<p>repeat进行增强,'.'可以重复使用命令 (ys=you surround)</p>
+<div class="highlight"><pre><span class="k">[d]</span>
+<span class="err">cs&quot;&#39;</span>
+<span class="err">&quot;Hello</span> <span class="err">world!&quot;</span> <span class="err">-&gt;</span> <span class="err">&#39;Hello</span> <span class="err">world!&#39;</span>
+
+<span class="err">ds&quot;</span>
+<span class="err">&quot;Hello</span> <span class="err">world!&quot;</span> <span class="err">-&gt;</span> <span class="err">Hello</span> <span class="err">world!</span>
+
+<span class="err">ysiw&quot;</span>
+<span class="err">Hello</span> <span class="err">-&gt;</span> <span class="err">&quot;Hello&quot;</span>
+
+<span class="err">yss&quot;</span>
+<span class="err">Hello</span> <span class="err">world</span> <span class="err">-&gt;</span> <span class="err">&quot;Hello</span> <span class="err">world&quot;</span>
+
+<span class="err">cst&quot;</span>
+<span class="err">&lt;a&gt;abc&lt;/a&gt;</span>  <span class="err">-&gt;</span> <span class="err">&quot;abc&quot;</span>
+
+<span class="err">veeS&quot;</span>
+<span class="err">hello</span> <span class="err">world</span> <span class="err">-&gt;</span> <span class="err">&quot;hello</span> <span class="err">world&quot;</span>
+
+<span class="err">ys$&quot;</span> <span class="err">当前到行尾,</span> <span class="err">引号引住</span>
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="surround" src="https://github.com/wklken/gallery/blob/master/vim/surround.gif?raw=true" /></p>
+</li>
+<li>
+<h4>快速运行 <a href="https://github.com/thinca/vim-quickrun">vim-quickrun</a></h4>
+<div class="highlight"><pre>F10或&lt;leader&gt;r  快速运行当前文件
+</pre></div>
+
+
+</li>
+<li>
+<h4>去行尾空格 <a href="https://github.com/bronson/vim-trailing-whitespace">bronson/vim-trailing-whitespace</a></h4>
+<p>将代码行最后无效的空格标红</p>
+<div class="highlight"><pre>[sd] ,空格    去掉当前行末尾空格
+</pre></div>
+
+
+</li>
+<li>
+<h4>赋值语句代码对齐 <a href="https://github.com/junegunn/vim-easy-align">junegunn/vim-easy-align</a></h4>
+<p>将代码,或者json等, 根据表达式符号进行对齐,具体见例子 <a href="https://github.com/junegunn/vim-easy-align/blob/master/EXAMPLES.md">examples</a></p>
+<div class="highlight"><pre>[sd]  可以选中多行,不选中默认操作当前行
+    ,a= 对齐等号表达
+    ,a: 对齐冒号表达式(json/map等)
+    ,a&lt;space&gt;  首个空格对齐
+    ,a2&lt;space&gt; 第二个空格对齐
+    ,a*&lt;space&gt; 所有空格依次对齐
+</pre></div>
+
+
+<p>同类插件 <a href="https://github.com/godlygeek/tabular">tabular</a></p>
+</li>
+</ol>
+<blockquote>
+<p>快速移动</p>
+</blockquote>
+<ol>
+<li>
+<h4>位置跳转<a href="https://github.com/Lokaltog/vim-easymotion">Lokaltog/vim-easymotion</a></h4>
+<p>必装，效率提升杀手锏，跳转到光标后任意位置</p>
+<p>easymothion主要用于快速查找跳转, 今天看了支持jk快速跳转(支持多字母搜索跳转不过我认为太重了)</p>
+<p>配置(我的leader键配置 let g:mapleader = ',')</p>
+<div class="highlight"><pre>,, + w  跳转
+,, + fe  查找&#39;e&#39;,快速跳转定位到某个字符位置
+,,j      快速决定移动到下面哪行(比用行号/j移动快)
+,,k      快速移动到上面哪行
+,,l      本行, 向后快速移动
+,,h      本行, 向前快速移动
+,,.      重复上一次easymotion命令
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="easy_motion" src="https://github.com/wklken/gallery/blob/master/vim/easymotion.gif?raw=true" /></p>
+</li>
+<li>
+<h4>符号匹配跳转<a href="https://github.com/vim-scripts/matchit.zip">vim-scripts/matchit.zip</a></h4>
+<p>必装</p>
+<p>% 匹配成对的标签，跳转</p>
+</li>
+<li>
+<h4>mark跳转 <a href="https://github.com/kshenoy/vim-signature">kshenoy/vim-signature</a></h4>
+<p>必装, 快速打标签, 随时跳回标签位置(修复python自动去除空白函数和该插件冲突的问题)</p>
+<div class="highlight"><pre>m[a-zA-Z]   打标签
+&#39;[a-zA-Z]   跳转到标签位置
+&#39;. 最后一次变更的地方
+&#39;&#39; 跳回来的地方
+
+m&lt;space&gt;    去除所有标签
+</pre></div>
+
+
+</li>
+</ol>
+<blockquote>
+<p>快速选中</p>
+</blockquote>
+<ol>
+<li>
+<h4>区块伸缩 <a href="https://github.com/terryma/vim-expand-region">terryma/vim-expand-region</a></h4>
+<p>视图模式下可伸缩选中部分，用于快速选中某些块</p>
+<div class="highlight"><pre><span class="k">[sd]</span>
+<span class="err">v</span> <span class="err">增加选中范围</span>
+<span class="err">V</span> <span class="err">减少选中范围</span>
+</pre></div>
+
+
+<p>演示（直接取链到其github图)</p>
+<p><img alt="expand-region" src="https://raw.github.com/terryma/vim-expand-region/master/expand-region.gif" /></p>
+</li>
+<li>
+<h4>多光标选中编辑 <a href="https://github.com/terryma/vim-multiple-cursors">vim-multiple-cursors</a></h4>
+<p>多光标批量操作</p>
+<div class="highlight"><pre><span class="k">[sd]</span>
+<span class="err">ctrl</span> <span class="err">+</span> <span class="err">m</span> <span class="err">开始选择</span>
+<span class="err">ctrl</span> <span class="err">+</span> <span class="err">p</span> <span class="err">向上取消</span>
+<span class="err">ctrl</span> <span class="err">+</span> <span class="err">x</span> <span class="err">跳过</span>
+<span class="err">esc</span>   <span class="err">退出</span>
+</pre></div>
+
+
+<p>演示(官方演示图)</p>
+<p><img alt="multiple-cursors" src="https://raw.github.com/terryma/vim-multiple-cursors/master/assets/example1.gif" /></p>
+</li>
+</ol>
+<blockquote>
+<p>文本对象扩展</p>
+</blockquote>
+<ol>
+<li>自定义文本对象 <a href="https://github.com/kana/vim-textobj-user.git">kana/vim-textobj-user.git</a></li>
+</ol>
+<p>后面几个扩展对象的依赖</p>
+<p>更多其他扩展,见 <a href="https://github.com/kana/vim-textobj-user/wiki">wiki</a></p>
+<p>PS: 特希望有一个扩展支持 '' "" [] {} ()</p>
+<ol>
+<li>行文本对象 <a href="https://github.com/kana/vim-textobj-line">kana/vim-textobj-line</a></li>
+</ol>
+<p>增加文本对象: l</p>
+<div class="highlight"><pre>    dal
+    yal
+    cil
+</pre></div>
+
+
+<ol>
+<li>缩进文本对象 <a href="https://github.com/kana/vim-textobj-indent.git">kana/vim-textobj-indent.git</a></li>
+</ol>
+<p>增加文本对象: i</p>
+<p>相同缩进属于同一块,对python很有用</p>
+<div class="highlight"><pre>    dai
+    yai
+    cii
+</pre></div>
+
+
+<ol>
+<li>文件文本对象 <a href="https://github.com/kana/vim-textobj-entire.git">kana/vim-textobj-entire.git</a></li>
+</ol>
+<p>增加文本对象: e</p>
+<div class="highlight"><pre>    dae
+    yae
+    cie
+</pre></div>
+
+
+<blockquote>
+<p>功能相关</p>
+</blockquote>
+<ol>
+<li>
+<h4>搜索 <a href="https://github.com/kien/ctrlp.vim">kien/ctrlp.vim</a></h4>
+<p>文件搜索,ack/Command-T需要依赖于外部包,不喜欢有太多依赖的,除非十分强大, 具体 <a href="http://kien.github.io/ctrlp.vim/">文档</a></p>
+<div class="highlight"><pre>[sd] ,p  打开ctrlp搜索
+[sd] ,f  相当于mru功能，show recently opened files
+
+ctrl + j/k 进行上下移动
+ctrl + x/v 分屏打开该文件 [重要**]
+ctrl + t   在新tab中打开该文件
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="ctrip" src="https://github.com/wklken/gallery/blob/master/vim/ctrlp.gif?raw=true" /></p>
+<p>插件:
+当前文件快速函数搜索:<a href="https://github.com/tacahiroy/ctrlp-funky">tacahiroy/ctrlp-funky</a></p>
+<p>解决问题:使用tagbar当函数比较多的时候,移动耗时较长,使用快速搜索快很多</p>
+<div class="highlight"><pre>,fu   进入当前文件函数搜索
+,fU   搜索光标下单词对应函数
+</pre></div>
+
+
+</li>
+<li>
+<h4>全局搜索插件(类sumlimetext) <a href="https://github.com/dyng/ctrlsf.vim">dyng/ctrlsf.vim</a></h4>
+<p>解决了重构代码时需要修改多处的问题</p>
+<div class="highlight"><pre>光标移动到单词, 按\ 进入全局搜索
+
+进入左侧后的操作:
+
+            回车/o, 打开
+            t - 在tab中打开(建议)
+            T - Like t but focus CtrlSF window instead of opened new tab.
+            q - Quit CtrlSF window.
+</pre></div>
+
+
+</li>
+<li>
+<h4>git 常用操作 <a href="https://github.com/tpope/vim-fugitive">tpope/vim-fugitive</a></h4>
+<p>git插件, 编辑文件时进行一些diff操作,例如diff</p>
+<p>不是很习惯,所以用的次数太少,目前和现有配置快捷键有冲突,尚未解决</p>
+<div class="highlight"><pre><span class="k">[sd]</span>
+<span class="na">,ge</span>   <span class="o">=</span> <span class="s">git diff edit[gd被ycm占用了]</span>
+</pre></div>
+
+
+<p>没有配置其他快捷键,可以参照github,自己增加修改映射</p>
+</li>
+<li>
+<h4>git状态 <a href="https://github.com/airblade/vim-gitgutter">airblade/vim-gitgutter</a></h4>
+<p>git,在同一个文件内,通过标记和高亮,显示本次文件变更点</p>
+<div class="highlight"><pre><span class="k">[sd]</span>
+<span class="na">,gs</span>   <span class="o">=</span> <span class="s">show diff status [gd被ycm占用了]</span>
+</pre></div>
+
+
+<p><img alt="gitgutter" src="https://raw.githubusercontent.com/airblade/vim-gitgutter/master/screenshot.png" /></p>
+</li>
+<li>
+<h4>文件时光机 <a href="https://github.com/sjl/gundo.vim">sjl/gundo.vim</a></h4>
+<p>编辑文件时光机</p>
+<div class="highlight"><pre>[sd] ,h  查看文件编辑历史
+</pre></div>
+
+
+<p>附:同类插件 <a href="https://github.com/mbbill/undotree">mbbill/undotree</a></p>
+</li>
+</ol>
+<blockquote>
+<p>显示增强</p>
+</blockquote>
+<ol>
+<li>
+<h4>状态栏增强 <a href="https://github.com/bling/vim-airline">bling/vim-airline</a></h4>
+<p>之前使用powerline, 用airline替换, powerline的配置注释,需要的自行解开</p>
+<p>演示</p>
+<p><img alt="airline" src="https://raw.githubusercontent.com/wiki/bling/vim-airline/screenshots/demo.gif" /></p>
+</li>
+<li>
+<h4>括号上色高亮 <a href="https://github.com/kien/rainbow_parentheses.vim">kien/rainbow_parentheses.vim</a></h4>
+<p>演示</p>
+<p><img alt="rainbow" src="https://github.com/wklken/gallery/blob/master/vim/rainbow_parentheses.png?raw=true" /></p>
+</li>
+</ol>
+<blockquote>
+<p>显示增强-主题</p>
+</blockquote>
+<ol>
+<li>
+<h4><a href="https://github.com/altercation/vim-colors-solarized">altercation/vim-colors-solarized</a></h4>
+</li>
+</ol>
+<p>经典主题,目前我使用的,看起来舒服</p>
+<ol>
+<li>
+<h4><a href="https://github.com/tomasr/molokai">tomasr/molokai</a></h4>
+</li>
+</ol>
+<p>用sublime text2的同学应该很熟悉, 另一个主题,可选,偶尔换换味道</p>
+<ol>
+<li>
+<h4><a href="https://github.com/chriskempson/vim-tomorrow-theme">chriskempson/vim-tomorrow-theme</a></h4>
+</li>
+</ol>
+<p>另一款经典主题</p>
+<p>默认值提供solarized和molokai主题，其他主题需自行配置安装</p>
+<blockquote>
+<p>快速导航</p>
+</blockquote>
+<ol>
+<li>
+<h4>目录树 <a href="https://github.com/scrooloose/nerdtree">scrooloose/nerdtree</a></h4>
+<p>必装,开启目录树导航</p>
+<div class="highlight"><pre><span class="k">[sd]</span>
+    <span class="err">,n</span>  <span class="err">打开</span> <span class="err">关闭树形目录结构</span>
+
+    <span class="err">在nerdtree窗口常用操作：(小写当前，大写root)</span>
+    <span class="err">x.......收起当前目录树</span>
+    <span class="err">X.......递归收起当前目录树</span>
+    <span class="err">r.......刷新当前目录</span>
+    <span class="err">R.......刷新根目录树</span>
+
+    <span class="err">p.......跳到当前节点的父节点</span>
+    <span class="err">P.......跳到root节点</span>
+    <span class="err">k/j.....上下移动</span>
+    <span class="err">K.......到同目录第一个节点</span>
+    <span class="err">J.......最后一个节点</span>
+
+    <span class="err">o.......Open</span> <span class="err">files,</span> <span class="err">directories</span> <span class="err">and</span> <span class="err">bookmarks</span>
+
+    <span class="err">s.......split上下分屏</span><span class="k">[原来是i, 改键]</span>
+    <span class="err">v.......vsplit左右分屏</span><span class="k">[原来是s, 改键]</span>
+
+    <span class="err">c.......将当前目录设为根节点</span>
+    <span class="err">q.......关闭</span>
+</pre></div>
+
+
+<p>nerdtree配合tab非常赞, i/s 可以在右侧分屏打开</p>
+<p>演示</p>
+<p><img alt="thenerdtree" src="https://github.com/wklken/gallery/blob/master/vim/thenerdtree.gif?raw=true" /></p>
+</li>
+<li>
+<h4>目录树tab增强 <a href="https://github.com/jistr/vim-nerdtree-tabs">jistr/vim-nerdtree-tabs</a></h4>
+<p>选装, 多个tab时, 保持nerdtree一致</p>
+<p>Just one NERDTree</p>
+</li>
+<li>
+<h4>tab/buffer导航增强 <a href="https://github.com/szw/vim-ctrlspace">vim-ctrlspace</a></h4>
+<p>必装, 多buffer/多tab, 方便的查看列表, 操作, 切换, 与nerdtree/tabs完美配合, 很强大, 目前只使用基础功能, 后续根据需要再完善</p>
+<p>注意: 有些人的ctrl+space被占用的, 配一个leader快捷键(下面是默认配置)</p>
+<div class="highlight"><pre>  let g:ctrlspace_default_mapping_key=&quot;&lt;C-Space&gt;&quot;
+</pre></div>
+
+
+<p>(同时可以看看文档前面部分针对tab的快捷键)</p>
+<div class="highlight"><pre>  ctrl+&lt;space&gt; 得到当前tab的buffer列表
+  j/k     上下移动
+  回车     跳转到
+  v/V     vsp分屏打开, v会进入对应文件, V会保留在ctrlspace区域
+  s/S     sp分屏打开
+
+  l       展示/关闭tab列表
+      j/k 或 [/] 上下移动
+      =   给tab命名
+      -   Move the current tab to the left (decrease its number)
+      +   Move the current tab to the right (increase its number)
+      Backspace Go back to Buffer List
+
+  L   Jump to Tab List in Search Mode
+
+  esc/q   close the list
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="ctrlspace" src="https://github.com/wklken/gallery/blob/master/vim/ctrlspace.gif?raw=true" /></p>
+<p>官方视频</p>
+</li>
+</ol>
+<p align="center">
+<a href="https://www.youtube.com/watch?v=U1hbGJm3J0g">
+<img alt="Vim-CtrlSpace 4.0 Demo"
+src="https://raw.github.com/szw/vim-ctrlspace/master/gfx/screen_small.png" />
+</a>
+</p>
+
+<ol>
+<li>
+<h4>Tag <a href="https://github.com/majutsushi/tagbar">majutsushi/tagbar</a></h4>
+<p>必装,标签导航,纬度和taglist不同, taglist的替代者</p>
+<p>tagbar针对而一些语言的文档https://github.com/majutsushi/tagbar/wiki</p>
+<p>注意:之前版本有装taglist,决定用tagbar替代,taglist的配置注解未删除,需要的自行打开</p>
+<div class="highlight"><pre> [sd] &lt;F9&gt; 打开
+</pre></div>
+
+
+<p>演示</p>
+<p><img alt="tagbar" src="https://github.com/wklken/gallery/blob/master/vim/tagbar.gif?raw=true" /></p>
+</li>
+</ol>
+<blockquote>
+<p>语言相关- 需要自定义编辑确认是否保留(默认打开)</p>
+</blockquote>
+<ol>
+<li>
+<h4>Python</h4>
+<p>Vim as a Python IDE, but much more than that!</p>
+<p>语法高亮<a href="https://github.com/hdima/python-syntax">python-syntax</a></p>
+<p>使用Python建议安装，python语法高亮,就是python.vim,在github,有维护和更新</p>
+<p>语法检查<a href="https://github.com/kevinw/pyflakes-vim">kevinw/pyflakes-vim</a></p>
+<p>虽然这个的作者推荐使用syntastic,但是这个插件对于pythoner还是很需要的</p>
+<p>因为有一个特牛的功能,fly check,即,编码时在buffer状态就能动态查错标记,弥补syntastic只能保存和打开时检查语法错误的不足</p>
+<p>演示</p>
+<p><img alt="pyflakes" src="https://github.com/wklken/gallery/blob/master/vim/pyflakes.png?raw=true" /></p>
+</li>
+<li>
+<h4>Golang</h4>
+<p>Go语言自动补全<a href="https://github.com/Blackrush/vim-gocode">Blackrush/vim-gocode</a></p>
+<p>安装gocode之后 ,配置这个插件</p>
+<div class="highlight"><pre><span class="x">`which gocode` (add </span><span class="p">$</span><span class="nv">GOPATH</span><span class="x">/bin to you </span><span class="p">$</span><span class="nv">PATH</span><span class="x">)</span>
+</pre></div>
+
+
+<p>另一个插件[觉得太过庞大没有使用,golang开发者可以配置试用下] <a href="https://github.com/fatih/vim-go">fatih/vim-go</a> <a href="http://blog.gopheracademy.com/vimgo-development-environment">介绍</a></p>
+</li>
+<li>
+<h4>Markdown</h4>
+<p><a href="https://github.com/plasticboy/vim-markdown">plasticboy/vim-markdown</a></p>
+<p>markdown语法,编辑md文件</p>
+</li>
+<li>
+<h4>HTML/JS/JQUERY/CSS</h4>
+<p><a href="https://github.com/jelera/vim-javascript-syntax">jelera/vim-javascript-syntax</a> js语法高亮
+<a href="https://github.com/pangloss/vim-javascript">pangloss/vim-javascript</a> 缩进等</p>
+<p><a href="https://github.com/marijnh/tern_for_vim">marijnh/tern_for_vim</a> 配合ycm进行js/jquery自动补全,需要安装 tern_for_vim 并配置, 文档  <a href="http://ternjs.net/">ternjs</a></p>
+<div class="highlight"><pre>cd ~/.vim/bundle/tern_for_vim &amp;&amp; npm install
+</pre></div>
+
+
+<p><a href="https://github.com/maksimr/vim-jsbeautify">maksimr/vim-jsbeautify</a>  js/html/css 格式化, 未配置</p>
+<p><a href="https://github.com/nono/jquery.vim">nono/jquery.vim</a> jquery高亮</p>
+<p><a href="https://github.com/elzr/vim-json">elzr/vim-json</a> json高亮,未配置</p>
+<p><a href="https://github.com/kchmck/vim-coffee-script">kchmck/vim-coffee-script</a> coffeescript,未配置</p>
+<p><a href="https://github.com/groenewege/vim-less">groenewege/vim-less</a> less,未配置</p>
+<p><a href="https://github.com/mattn/emmet-vim">emmet</a> zencoding,未配置</p>
+<p><a href="https://github.com/gorodinskiy/vim-coloresque">gorodinskiy/vim-coloresque</a> 配置 |
+<a href="https://github.com/ap/vim-css-color">vim-css-color</a> 未配置
+css颜色展示</p>
+</li>
+<li>
+<h4>Jinja2</h4>
+<p><a href="https://github.com/Glench/Vim-Jinja2-Syntax">Glench/Vim-Jinja2-Syntax</a></p>
+<p>jinja2 语法高亮</p>
+</li>
+<li>
+<h4>Ruby</h4>
+<p>可以参考tpope的插件列表,很多跟ruby相关</p>
+<p><a href="https://github.com/tpope/vim-rails">tpope/vim-rails</a> 未配置
+<a href="https://github.com/nelstrom/vim-textobj-ruby">nelstrom/vim-textobj-rubyblock</a></p>
+<p>这个有坑, 暂未搞定
+<a href="https://github.com/tpope/vim-endwise">tpope/vim-endwise</a> 未配置,自动加end</p>
+</li>
+<li>
+<h4>PHP</h4>
+<p><a href="https://github.com/spf13/PIV">spf13/PIV</a> 未配置</p>
+<p><a href="https://github.com/arnaud-lb/vim-php-namespace">arnaud-lb/vim-php-namespace</a> 未配置</p>
+</li>
+<li>
+<h4>非语言语法高亮</h4>
+<p><a href="https://github.com/evanmiller/nginx-vim-syntax">evanmiller/nginx-vim-syntax</a> 未配置</p>
+</li>
+</ol>
+<hr />
+<hr />
+<h3>Update Log</h3>
+<p>详细 <a href="https://github.com/wklken/k-vim/blob/master/UPDATE_LOG.md">更新日志</a></p>
+<p>version: 9.0</p>
+<div class="highlight"><pre>1. 新增依赖ag(the_silver_searcher)
+
+安装 [the_silver_searcher](https://github.com/ggreer/the_silver_searcher#installing)
+
+具体见文档
+
+2. 引入 thinca/vim-quickrun
+
+    2.1 以message的方式展示, 同原先的F10行为, 按回车过掉消息
+    2.2    F10 运行 / ,r  运行
+
+2. 引入dyng/ctrlsf.vim, 类似 sublimetext的全局搜索
+
+    2.1 依赖于ag的全局搜索
+    2.2 将光标挪到单词, 快捷键\  - 进入全局搜索, 移入分屏界面, o/t/T/q操作
+
+
+3. 代码折叠
+
+    3.1 &lt;leader&gt;zz 折叠/打开所有代码toggle(本次新增配置)
+    3.2 za 当前光标所在区域折叠toggle(vim默认的)
+
+4. syntastic语法检查
+
+    4.1 修正语法检查错误高亮, 精确到具体错误单词
+    4.2 开启python的pep8, 允许忽略某些warning, vimrc.bundles: line 40
+    4.3 &lt;leader&gt;s  打开当前文件所有语法错误列表(新增配置)
+
+5.  easymotion
+
+    5.1 &lt;leader&gt;&lt;leader&gt;.  重复上一次easymotion命令, 更高效(新增配置)
+
+6. 修改RainbowParentheses, 防止黑色括号出现
+
+7. 修改vim-expand-region快捷键
+
+    7.1 v 扩增选中范围
+    7.2 V 缩小选中范围
+
+8. 新增主题tomorrow
+</pre></div>
+
+
+<h3>TODO</h3>
+<ol>
+<li>语言插件集合, 语法增强 https://github.com/sheerun/vim-polyglot</li>
+</ol>
+<h3>Contributors</h3>
+<p>thx a lot. 可以给我提pull request:)</p>
+<p>查看详情 <a href="https://github.com/wklken/k-vim/graphs/contributors">git-contributors</a></p>
+<h3>Inspire</h3>
+<ol>
+<li>
+<p>vimrc文件布局<code>vimrc+vimrc.bundles</code>配置方式参考 <a href="https://github.com/square/maximum-awesome">maximum-awesome</a></p>
+</li>
+<li>
+<p>install.sh 参考<code>spf13-vim</code> 的<code>bootstrap.sh</code> <a href="https://github.com/spf13/spf13-vim">spf13-vim</a></p>
+</li>
+<li>
+<p>插件管理使用<a href="https://github.com/gmarik/Vundle.vim">Vundle</a></p>
+</li>
+<li>
+<p>自动补全 <a href="https://github.com/Valloric/YouCompleteMe">YCM</a></p>
+</li>
+<li>
+<p>插件挑选 <a href="http://vimawesome.com/">VimAwesome</a></p>
+</li>
+</ol>
+<h3>Resources</h3>
+<p><a href="http://www.wklken.me/posts/2014/10/03/vim-resources.html">链接</a></p>
+<h3>Donation</h3>
+<p>如果你认为对你有所帮助, You can Buy me a coffee:)</p>
+<p><img alt="donation" src="https://raw.githubusercontent.com/wklken/gallery/master/donation/donation.png" /></p>
+<h2>------------------------</h2>
+<p>The End!</p>
+<p>wklken (凌岳/pythoner/vim党预备党员)</p>
+<p>Email: wklken@yeah.net</p>
+<p>Github: https://github.com/wklken</p>
+<p>Blog: <a href="http://www.wklken.me">http://www.wklken.me</a></p>
+<p>2013-06-11 于深圳</p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/12/22/SVM-dual.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之支持向量机SVM：原始问题与对偶问题">机器学习算法之支持向量机SVM：原始问题与对偶问题</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-12-22</span>
+<span>| tags: <a href="http://backnode.github.io/tag/svm.html">SVM</a><a href="http://backnode.github.io/tag/support-vector-machine.html">support vector machine</a><a href="http://backnode.github.io/tag/dual.html">dual</a></span>
+</footer><!-- /.post-info -->                <h1>0. 最大间隔分离超平面（Large-Margin Separating Hyperplane）</h1>
+<hr />
+<p>考虑一个线性可分数据上的二分类问题，如果用最基本的线性分类器去拟合训练数据，那么产生的结果将不唯一，如下图所示：</p>
+<p><center><img alt="linear" src="http://7nio4l.com1.z0.glb.clouddn.com/linear_classify.jpg" /></center></p>
+<p>上图中三条线都将训练样本完全分类正确了，但是显然最右边那条是我们更想得到的，因为：<strong>最近的一个训练样本$x$距离分类超平面更远</strong>。这就意味着</p>
+<ol>
+<li>
+<p>这个分类超平面可以容忍更多噪声</p>
+</li>
+<li>
+<p>这个超平面更不容易过拟合</p>
+</li>
+</ol>
+<p><center><img alt="fat" src="http://7nio4l.com1.z0.glb.clouddn.com/fat-linear.jpg" /></center></p>
+<p>所以我们的目标是要找到最粗的分类超平面，即令最近所有训练样本$x_i$到分类超平面的最小距离最大，此外这个超平面还要能正确划分所有训练样本。</p>
+<p>$$max:margin(w)；subject：correctness$$</p>
+<p>其中：</p>
+<p>$correctness：y_n = sign(w^Tx_n)$， 即 $every \quad y_nw^Tx_n&gt;0$</p>
+<p>$margin(w) = min_{n=1,...,N} \, distance(x_n, w)$</p>
+<h1>1. Standard Large-Margin SVM</h1>
+<hr />
+<p>对于给定的训练数据集和超平面，定义超平面$ ...</h1><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+                <a class="readmore" href="http://backnode.github.io/pages/2015/12/22/SVM-dual.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/11/11/spp-net.html" rel="bookmark"
+                           title="Permalink to 论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》">论文笔记《Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition》</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-11</span>
+<span>| tags: <a href="http://backnode.github.io/tag/cnn.html">CNN</a><a href="http://backnode.github.io/tag/spp.html">SPP</a></span>
+</footer><!-- /.post-info -->                <h1>0. 摘要</h1>
+<hr />
+<ol>
+<li>
+<p>现有的卷积神经网络要求输入图片为固定尺寸，也就是说做用CNN图像识别时要对输入图像进行尺寸归一化，这样做可能会影响识别准确率。</p>
+</li>
+<li>
+<p>在图像物体检测任务中，一般来说先需要对图像进行窗口扫描生成候选窗口，然后以窗口图像为输入逐个判断。这个过程中有很多重复计算：提取卷积特征（即全连接层之前的所有层）并不要求输入图像尺寸固定，所以单张图像实际上只需计算一遍卷积特征即可。</p>
+</li>
+</ol>
+<p>本文要介绍的SPP-net便解决了上述两个问题，并在2014年ImageNet的物体检测比赛中取得第二名，图像分类比赛中取得第三名。</p>
+<h1>1. DEEP NETWORKS WITH SPATIAL PYRAMID POOLING</h1>
+<hr />
+<h2>1.1 Convolutional Layers and Feature Maps</h2>
+<p>常规的DeepCNN都要求输入图像尺寸固定，这是因为在全连接层中要求输入固定长度的特征向量，而全连接层之前的卷积pooling层并不严格要求输入图像的尺寸固定。卷积pooling层的输出尺寸比例基本和输入图像的尺寸比例一致，这些输出就是所谓的特征图（feature map）。特征图不仅仅反映输入图像对特征响应的强度信息，还反映出空间位置信息，如图1所示，图(a)中箭头位置对应图(b)filter中响应最强烈位置，图(c)中的绿色矩形区域对图(b)的filter有强响应 ...</p>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/11/11/spp-net.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/11/05/word2vec.html" rel="bookmark"
+                           title="Permalink to Python版Word2Vec 尝试">Python版Word2Vec 尝试</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-05</span>
+<span>| tags: <a href="http://backnode.github.io/tag/gensim.html">gensim</a><a href="http://backnode.github.io/tag/word2vec.html">Word2Vec</a></span>
+</footer><!-- /.post-info -->                <h1>0. 数据准备</h1>
+<hr />
+<p>首先从<a href="http://www.sogou.com/labs/dl/ca.html">搜狗全网新闻数据</a>下载训练数据集，解压后用以下命令生成文件列表保存于文件“sougouCA_list.csv”中：</p>
+<div class="highlight"><pre>find <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span> -name <span class="s2">&quot;*.txt&quot;</span> &gt; sougouCA_list.csv
+</pre></div>
+
+
+<p>然后准备了一个中文停用词文档，文件中包含有“的、其中、例如”等2000多个中文停用词，每行一个，文件名“all_stopword.txt”。</p>
+<h1>1. 训练模型</h1>
+<hr />
+<h2>1.1 读取停用词</h2>
+<p>从文档中读取所有停用词，存放于一个集合中，届时用于查询某单词是否属于停用词。</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_stopWords</span><span class="p">(</span><span class="n">stopWords_fn</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stopWords_fn</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">stopWords_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\t</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/11/05/word2vec.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html" rel="bookmark"
+                           title="Permalink to 论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》">论文笔记《Learning Multi-Domain Convolutional Neural Networks for Visual Tracking》</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-02</span>
+<span>| tags: <a href="http://backnode.github.io/tag/visual-tracking.html">visual tracking</a><a href="http://backnode.github.io/tag/cnn.html">CNN</a></span>
+</footer><!-- /.post-info -->                <h1>0. 摘要</h1>
+<hr />
+<p>基于CNN的一个跟踪算法，达到了state-of-art水平，意味着深度学习又占领了一个山头。本文中使用的网络由共享层（shared layers)和许多特定目标分支层组成。每一个分支层对应一个二分类的任务：确定输入样本是不是该分支对应的跟踪目标。当在一个新的图像序列中跟踪一个目标时，用一个新的二分类层连接共享层，作为新的跟踪网络，并实时在线微调。这个网络取名MDNet，具体细节看下文。</p>
+<h1>1. Multi-Domain Network (MDNet)</h1>
+<hr />
+<h2>1.1 网络结构</h2>
+<p>相比于AlexNet和VGG-Nets，作者使用了一个相对较小的网络来做跟踪，并解释了理由：</p>
+<ol>
+<li>
+<p>跟踪问题本质上只是个二分类的任务，对模型复杂度要求相对更低。</p>
+</li>
+<li>
+<p>随着网络越来越深，空间信息越来越稀释，所以：对于图像中精准的目标定位，CNN并不是那么有效。</p>
+</li>
+<li>
+<p>在跟踪任务中通常目标较小，所以输入大小（input size）也就小，网络结构自然也就更浅。</p>
+</li>
+<li>
+<p>跟踪通常是一个实时任务，小网络显然更有效率。</p>
+</li>
+</ol>
+<p>下图即MDNet网络结构，由共享层和K个特定目标分支层组成，黄色和蓝色的bounding boxes分别对应每个特定分支层的正样本和负样本。</p>
+<p><img alt="MDNet" src="http://7nio4l.com1.z0.glb.clouddn.com/MDNet-arch.jpg" /></p>
+<h2>1.2 Learning Algorithm ...</h2>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/11/02/CNN-for-tracking.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/09/25/AdaBoost-DTree.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之Adaptive Boosted Decision Tree">机器学习算法之Adaptive Boosted Decision Tree</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-09-25</span>
+<span>| tags: <a href="http://backnode.github.io/tag/adaboost.html">AdaBoost</a><a href="http://backnode.github.io/tag/decison-tree.html">decison tree</a></span>
+</footer><!-- /.post-info -->                <h1>0. 前言</h1>
+<hr />
+<p>先回忆一下， 在<a href="http://backnode.github.io/pages/2015/04/23/random-forest.html">随机森林</a>中， 用<code>bagging</code> + <code>decision tree</code>训练了一堆小决策树，然后用投票的方式将这些树组合起来形成随机森林：</p>
+<p><img alt="rf" src="http://7nio4l.com1.z0.glb.clouddn.com/rf.jpg" /></p>
+<p><strong>那么<code>AdaBoost</code>是否也可以与决策树结合呢？</strong></p>
+<h1>1. Weighted Decision Tree Algorithm</h1>
+<hr />
+<p>在<a href="http://backnode.github.io/pages/2015/04/30/decision-tree.html">决策树</a>中，对于输入数据是平等对待的，也就是说所有数据的权重是一样的。那么如果我们想要一个可以<strong>接受权重的决策树</strong>$DTree(\mathcal{D},u^{(t)})$，该怎么做呢？</p>
+<p>第一个方法就是修改决策树内部的<code>error function</code>，使每一个样本的error值乘上对应的权重：</p>
+<p><img alt="error" src="http://7nio4l.com1.z0.glb.clouddn.com/weightedDT-error.jpg" /></p>
+<p>但是这个方法要修改算法内部，更多的时候我们希望把决策树当成一个黑盒子。所以第二个方法就是在输入数据上动手脚：<strong>按照权重比例对数据进行采样</strong>。即权重更大的数据有更高的概率被采到。</p>
+<p><img alt="sampling" src="http://7nio4l.com1.z0.glb.clouddn.com/adaBoostDT-sampling.jpg" /></p>
+<h1>2. AdaBoost</h1>
+<hr />
+<p>简单的说AdaBoost是将一堆<code>estimators</code>线性组合起来，现在我们的<code>base estimator ...</code></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+                <a class="readmore" href="http://backnode.github.io/pages/2015/09/25/AdaBoost-DTree.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/09/25/GradientBoost-DTree.html" rel="bookmark"
+                           title="Permalink to 机器学习算法之Gradient Boost Decision Tree">机器学习算法之Gradient Boost Decision Tree</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-09-25</span>
+<span>| tags: <a href="http://backnode.github.io/tag/gradientboost.html">GradientBoost</a><a href="http://backnode.github.io/tag/decison-tree.html">decison tree</a></span>
+</footer><!-- /.post-info -->                <h1>0. Gradient Boost</h1>
+<hr />
+<p>在梯度下降方法中，每一次迭代分两步：第一步先找一个好的梯度方向，第二步决定在这个方向上走多远。而在<code>Gradient Boosting</code>中，同样是经过N次迭代，每次先找一个好的函数方向，然后决定在这个函数方向上走多远，如下图中$h（x_n）$即要找的函数方向，$\eta$决定在这个方向上走多远。</p>
+<p><img alt="gb" src="http://7nio4l.com1.z0.glb.clouddn.com/gradientBoosting.jpg" /></p>
+<h1>1. 推导</h1>
+<hr />
+<p>假设我们要用<code>GradientBoost</code>做回归，去L2为error measure： </p>
+<p><img alt="regression" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-for-reg.jpg" /></p>
+<p>我们先看黄色部分的优化问题，经过泰勒展开一番推导：</p>
+<p><img alt="reduction" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-reduction.jpg" /></p>
+<p>我们得到了一个问题，求一个$h$使得上式后面那项越小越好。如果我们不对$h$的大小做限制，那么最终$h$会走向无穷大或无穷小：$h(x_n) = -\propto·(S_n-y_n)$。为了避免这样的情况我们给$h(x_n)$加一个限制：</p>
+<p><img alt="reg" src="http://7nio4l.com1.z0.glb.clouddn.com/gb-for-reg2.jpg" /></p>
+<p>所以最终这个问题就演变成了:通过对<strong>余数 ...</strong></p><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+
+                <a class="readmore" href="http://backnode.github.io/pages/2015/09/25/GradientBoost-DTree.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/08/31/multi-thread.html" rel="bookmark"
+                           title="Permalink to 关于多线程编程的一点思考">关于多线程编程的一点思考</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-08-31</span>
+<span>| tags: <a href="http://backnode.github.io/tag/multi-threading.html">multi threading</a><a href="http://backnode.github.io/tag/duo-xian-cheng.html">多线程</a></span>
+</footer><!-- /.post-info -->                <h1>0. 起因</h1>
+<hr />
+<p>有一堆图片，比如20000张甚至更多，需要我批量处理，处理单张图片的函数<code>processImg(image_path)</code>已经写好，如何效率完成任务？</p>
+<h1>1. 出发</h1>
+<hr />
+<p>既然要效率完成任务，不用想当然是多线程，借助<code>boost</code>库线程池：</p>
+<div class="highlight"><pre><span class="c1">// this piece of code is from Internet </span>
+
+<span class="cp">#include &lt;boost/asio/io_service.hpp&gt;</span>
+<span class="cp">#include &lt;boost/bind.hpp&gt;</span>
+<span class="cp">#include &lt;boost/thread/thread.hpp&gt;</span>
+
+<span class="k">namespace</span> <span class="n">multithread</span>
+<span class="p">{</span>                   
+    <span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span><span class="n">io_service</span><span class="o">::</span><span class="n">work</span><span class="o">&gt;</span> <span class="n">asio_worker</span><span class="p">;</span>
+
+    <span class="k">struct</span> <span class="n">ThreadPool ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/08/31/multi-thread.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/08/01/funcProg-C2-Python.html" rel="bookmark"
+                           title="Permalink to Function Programming in Python: 2. Callables">Function Programming in Python: 2. Callables</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-08-01</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/function-programming.html">function programming</a><a href="http://backnode.github.io/tag/han-shu-shi-bian-cheng.html">函数式编程</a></span>
+</footer><!-- /.post-info -->                <h1>0. 前言</h1>
+<hr />
+<p><em>“Function Programming in Python”</em> Chapter 2：Callables</p>
+<p>反复调用函数是函数式编程中的一个重点。在Python中有好多种不同的函数（或者说是可调用的something function-like）创建方式：</p>
+<ol>
+<li>
+<p>用关键字<code>def</code>创建常规命名函数</p>
+</li>
+<li>
+<p>用关键字<code>lambda</code>创建的匿名函数</p>
+</li>
+<li>
+<p>定义了<code>__call__()</code>函数的类的实例</p>
+</li>
+<li>
+<p>闭包（closures）</p>
+</li>
+<li>
+<p>实例的静态函数</p>
+</li>
+<li>
+<p>生成器函数</p>
+</li>
+</ol>
+<p>纯函数（pure function）和无副作用代码（side-effect-free code）的好处是更容易调试和测试。很多时候在一个函数中side effects很难被完全消除，但是我们可以用函数式编程的思考方式在一定程度上削弱它。</p>
+<h1>1. Named Functions and Lambdas</h1>
+<hr />
+<p>Named Functions和Lambdas的主要区别就在于是否有<code>__qualname__</code>属性。</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">hello1</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="o">.....</span> <span class="k">print ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/08/01/funcProg-C2-Python.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="http://backnode.github.io/pages/2015/07/29/funcProg-Python.html" rel="bookmark"
+                           title="Permalink to Function Programming in Python: 1. (Avoiding) Flow Control">Function Programming in Python: 1. (Avoiding) Flow Control</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <span>2015-07-29</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/function-programming.html">function programming</a><a href="http://backnode.github.io/tag/han-shu-shi-bian-cheng.html">函数式编程</a></span>
+</footer><!-- /.post-info -->                <h1>0. whatever</h1>
+<hr />
+<p><em>“Function Programming in Python”</em> Chapter 1：避免流控制</p>
+<p>在传统的imperative式编程中，一段代码通常包括一些循环（<code>while</code>或<code>for</code>）、变量的声明和数据的修改（dict，list，set等）、分支语句（<code>if/elif/else/</code>, <code>try/except/finally</code>）。所有这些看起来都很自然，很好理解。这些状态变量和可修改的数据结构通常从现实世界中抽象而来，但是它们会带来一些副作用，<strong>随意给定程序的一个断点，我们很难靠人脑快速精确地推断出这些数据里面的值</strong>，所以我们经常需要依靠编译器的帮助来查看这些数据里面的值是不是我们想要的那样。</p>
+<p>一个解决方案是使我们的代码专注于描述数据是什么（<strong>what</strong>），而不是如何构建数据（<strong>how</strong>）.</p>
+<h1>1. Encapsulation （封装）</h1>
+<hr />
+<p>最先想到的专注于“what”而不是“how”的方法就是：重构代码，把数据构建的操作放在一个独立的地方。考虑改写如下代码：</p>
+<div class="highlight"><pre><span class="c"># configure the data ...</span></pre></div>
+                <a class="readmore" href="http://backnode.github.io/pages/2015/07/29/funcProg-Python.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 3
+        <a href="http://backnode.github.io/index2.html">&raquo;</a>
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

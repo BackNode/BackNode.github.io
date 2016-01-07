@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Python版Word2Vec 尝试</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2015/11/05/word2vec.html" rel="bookmark"
+           title="Permalink to Python版Word2Vec 尝试">Python版Word2Vec 尝试</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2015-11-05</span>
+<span>| tags: <a href="http://backnode.github.io/tag/gensim.html">gensim</a><a href="http://backnode.github.io/tag/word2vec.html">Word2Vec</a></span>
+</footer><!-- /.post-info -->      <h1>0. 数据准备</h1>
+<hr />
+<p>首先从<a href="http://www.sogou.com/labs/dl/ca.html">搜狗全网新闻数据</a>下载训练数据集，解压后用以下命令生成文件列表保存于文件“sougouCA_list.csv”中：</p>
+<div class="highlight"><pre>find <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span> -name <span class="s2">&quot;*.txt&quot;</span> &gt; sougouCA_list.csv
+</pre></div>
+
+
+<p>然后准备了一个中文停用词文档，文件中包含有“的、其中、例如”等2000多个中文停用词，每行一个，文件名“all_stopword.txt”。</p>
+<h1>1. 训练模型</h1>
+<hr />
+<h2>1.1 读取停用词</h2>
+<p>从文档中读取所有停用词，存放于一个集合中，届时用于查询某单词是否属于停用词。</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_stopWords</span><span class="p">(</span><span class="n">stopWords_fn</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">stopWords_fn</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">stopWords_set</span> <span class="o">=</span> <span class="p">{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\r\t</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">stopWords_set</span>
+</pre></div>
+
+
+<h2>1.2 分词</h2>
+<p><a href="https://github.com/fxsjy/jieba">结巴分词</a>对中文分词已经支持地非常好，此处我们只需从结巴分词的结果中筛选掉停用词。</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">sentence2words</span><span class="p">(</span><span class="n">sentence</span><span class="p">,</span> <span class="n">stopWords</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">stopWords_set</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">    split a sentence into words based on jieba</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># seg_words is a generator</span>
+    <span class="n">seg_words</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stopWords</span><span class="p">:</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">seg_words</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopWords_set</span> <span class="ow">and</span> <span class="n">word</span> <span class="o">!=</span> <span class="s">&#39; &#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">seg_words</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">words</span>
+</pre></div>
+
+
+<h2>1.3 训练并保存</h2>
+<p>由于训练模型时是迭代进行，一次迭代只需要一小部分数据，所以没有必要一次性将所有数据载入内存，因此需要写一个生成器,一次生成一篇文档的数据：</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">MySentences</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_csv</span><span class="p">):</span>
+        <span class="n">stopWords_fn</span> <span class="o">=</span> <span class="s">&#39;all_stopword.txt&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopWords_set</span> <span class="o">=</span> <span class="n">get_stopWords</span><span class="p">(</span><span class="n">stopWords_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">u&#39;&lt;content&gt;(.*?)&lt;/content&gt;&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">list_csv</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fns</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fns</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;&lt;content&gt;&#39;</span><span class="p">):</span>
+                        <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">sentence2words</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">stopWords_set</span><span class="p">)</span>
+</pre></div>
+
+
+<p>然后训练一个<a href="https://radimrehurek.com/gensim/models/word2vec.html">gensim.Word2Vec()</a>模型并保存：</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">train_save</span><span class="p">(</span><span class="n">list_csv</span><span class="p">,</span> <span class="n">model_fn</span><span class="p">):</span>
+    <span class="n">sentences</span> <span class="o">=</span> <span class="n">MySentences</span><span class="p">(</span><span class="n">list_csv</span><span class="p">)</span>
+    <span class="n">num_features</span> <span class="o">=</span> <span class="mi">200</span>
+    <span class="n">min_word_count</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">num_workers</span> <span class="o">=</span> <span class="mi">48</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">epoch</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="mf">1e-5</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Word2Vec</span><span class="p">(</span>
+        <span class="n">sentences</span><span class="p">,</span>
+        <span class="n">size</span><span class="o">=</span><span class="n">num_features</span><span class="p">,</span>
+        <span class="n">min_count</span><span class="o">=</span><span class="n">min_word_count</span><span class="p">,</span>
+        <span class="n">workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
+        <span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
+        <span class="n">window</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="nb">iter</span><span class="o">=</span><span class="n">epoch</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model_fn</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</pre></div>
+
+
+<p>训练好模型后，便可用此模型查找相似词、获取两个词的相似度、获取词向量：</p>
+<div class="highlight"><pre><span class="n">model</span> <span class="o">=</span> <span class="n">train_save</span><span class="p">(</span><span class="s">&#39;sougouCA_list.csv&#39;</span><span class="p">,</span> <span class="s">&#39;word2vec_model_CA&#39;</span><span class="p">)</span>
+
+<span class="c"># get the word vector</span>
+<span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">most_similar</span><span class="p">(</span><span class="s">u&#39;互联网&#39;</span><span class="p">):</span>
+    <span class="k">print</span> <span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">print</span> <span class="n">model</span><span class="o">.</span><span class="n">similarity</span><span class="p">(</span><span class="s">u&#39;网络&#39;</span><span class="p">,</span> <span class="s">u&#39;互联网&#39;</span><span class="p">)</span>
+
+<span class="n">country_vec</span> <span class="o">=</span> <span class="n">model</span><span class="p">[</span><span class="s">u&quot;国家&quot;</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">country_vec</span>
+</pre></div>
+
+
+<p>基于此训练好的模型可以进一步做文本分类、文本聚类。</p>
+<p>本文所用源代码<a href="https://github.com/BackNode/train_Word2Vec">戳我</a>。</p>
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/11/05/word2vec.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2015/11/05/word2vec.html" data-title="Python版Word2Vec 尝试" data-url="http://backnode.github.io/pages/2015/11/05/word2vec.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

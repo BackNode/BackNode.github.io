@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - support vector machine</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/12/22/SVM-dual.html">机器学习算法之支持向量机SVM：原始问题与对偶问题</a></h1>
+<footer class="post-info">
+        <span>2015-12-22</span>
+<span>| tags: <a href="http://backnode.github.io/tag/svm.html">SVM</a><a href="http://backnode.github.io/tag/support-vector-machine.html">support vector machine</a><a href="http://backnode.github.io/tag/dual.html">dual</a></span>
+</footer><!-- /.post-info --><h1>0. 最大间隔分离超平面（Large-Margin Separating Hyperplane）</h1>
+<hr />
+<p>考虑一个线性可分数据上的二分类问题，如果用最基本的线性分类器去拟合训练数据，那么产生的结果将不唯一，如下图所示：</p>
+<p><center><img alt="linear" src="http://7nio4l.com1.z0.glb.clouddn.com/linear_classify.jpg" /></center></p>
+<p>上图中三条线都将训练样本完全分类正确了，但是显然最右边那条是我们更想得到的，因为：<strong>最近的一个训练样本$x$距离分类超平面更远</strong>。这就意味着</p>
+<ol>
+<li>
+<p>这个分类超平面可以容忍更多噪声</p>
+</li>
+<li>
+<p>这个超平面更不容易过拟合</p>
+</li>
+</ol>
+<p><center><img alt="fat" src="http://7nio4l.com1.z0.glb.clouddn.com/fat-linear.jpg" /></center></p>
+<p>所以我们的目标是要找到最粗的分类超平面，即令最近所有训练样本$x_i$到分类超平面的最小距离最大，此外这个超平面还要能正确划分所有训练样本。</p>
+<p>$$max:margin(w)；subject：correctness$$</p>
+<p>其中：</p>
+<p>$correctness：y_n = sign(w^Tx_n)$， 即 $every \quad y_nw^Tx_n&gt;0$</p>
+<p>$margin(w) = min_{n=1,...,N} \, distance(x_n, w)$</p>
+<h1>1. Standard Large-Margin SVM</h1>
+<hr />
+<p>对于给定的训练数据集和超平面，定义超平面$(w, b)$关于样本点$(x_i, y_i)$的<strong>函数间隔</strong>为：</p>
+<p>$$distance(x_i,b,w,)=y_i(w^Tx_i+b)$$</p>
+<p>函数间隔可以表示分类预测的正确性以及确信度，但是选择分离超平面时，只有函数间隔还不够，因为只要成比例地改变$w$和$b$，例如将它们改为$2w$和$2b$，超平面并没有改变，但是函数间隔却成为原来的2倍。如果不对$w$加以约束，最终优化得到的超平面会趋向于带有很小的$w$，而不是真正的最大间隔超平面。所以对$w$进行规范化，如$||w||=1$，这时函数间隔成为几何间隔。</p>
+<p>对于给定的训练数据集和超平面，定义超平面$(w, b)$关于样本点$(x_i, y_i)$的<strong>几何间隔</strong>为：</p>
+<p>$$distance(x_i,b,w,)=\frac{1}{||w||}y_i(w^Tx_i+b)$$</p>
+<p>于是问题就变成了：</p>
+<p>$$\binom{\underset{b,w}{max}\quad margin(b,w)}{sb.\quad every\quad y_n(w^Tx_n+b)&gt;0,\quad margin(b,w)=\underset{n=1,...,N}{min}\frac{1}{\left \| w \right \|}y_n(w^Tx_n+b)}$$</p>
+<p>考虑到缩放对超平面没有影响，为了进一步化简上述公式，进行一次特殊的缩放：令$min_{n=1,...,N}y_n(w^Tx_n+b)=1$，于是$margin(b,w)=\frac{1}{||w||}$.上述公式便成了：</p>
+<p>$$\binom{\underset{b,w}{max}\quad \frac{1}{||w||}}{sb.\quad every\quad y_n(w^Tx_n+b)&gt;0,\quad \underset{n=1,...,N}{min}y_n(w^Tx_n+b)=1}$$</p>
+<p>其中两个约束条件可以合并为一个，$max\frac{1}{||w||}$可以换成$min\frac{1}{2}w^Tw$</p>
+<p>$$\binom{\underset{b,w}{min}\quad \frac{1}{2}w^Tw}{sb.\quad every\quad y_n(w^Tx_n+b)&gt;=1\quad for\quad all\quad n }$$</p>
+<p>这是一个凸二次规划(convex quadratic programming)问题，通用的QP solver都可以解决这个问题。</p>
+<h1>2. Dual Support Vector Machine</h1>
+<hr />
+<p>如果从凸二次规划角度来解决上述问题，那么问题的复杂度会跟样本个数和特征维度相关，如果特征维度特别大甚至无限大呢？那么从凸二次规划角度解这个问题效率就会非常低，我们需要把问题转化一下，使解决复杂度仅与样本个数相关。由此引入<em>拉格朗日对偶性</em>，将原始问题转换为对偶问题。首先构建拉格朗日函数，为此，对每一个不等式约束引进拉格朗日乘子$\alpha_{i}$，定义拉格朗日函数如下：</p>
+<p>$$L(b, w, \alpha) = \frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}(1-y_n(w^Tz_n+b))\qquad(2.1)$$</p>
+<p>根据拉格朗日对偶性，原始问题的对偶问题是极大极小问题：</p>
+<p>$$SVM\equiv \underset{b,w}{min}(\underset{all\,\alpha_n&gt;=0}{maxL(b,w,\alpha)})\qquad(2.2)$$</p>
+<p>对于给定的任意的$\alpha'$($\alpha'_n&gt;=0$):</p>
+<p>$$\underset{b,w}{min}(\underset{all\,\alpha_n&gt;=0}{maxL(b,w,\alpha)})&gt;=\underset{b,w}{min}L(b,w,\alpha')\qquad(2.3)$$</p>
+<p>因为$max&gt;=any$. 那么进一步：</p>
+<p>$$\underset{b,w}{min}(\underset{all\,\alpha_n&gt;=0}{maxL(b,w,\alpha)})&gt;=\underset{all\,\alpha'_n&gt;=0}{max}\underset{b,w}{min}L(b,w,\alpha')\qquad(2.4)$$</p>
+<p>有一个叫Slater's condition的东西告诉我们满足这个条件时原始问题具有强对偶性，此时可以把上述公式的'$&gt;$'去掉，即左右两边的解相等，因此我们的SVM问题变成了对如下问题的求解：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0}{max}\underset{b,w}{min}(\frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}(1-y_n(w^Tz_n+b)))\qquad(2.5)$$</p>
+<p>对于公式2.5内部的$min$问题，可先后使拉格朗日函数对$b,w$求导等于0进行化简：</p>
+<p>$$\frac{\partial L(b,w,,\alpha)}{\partial b}=0=-\sum_{n=1}^{N}\alpha_ny_n\qquad(2.6)$$</p>
+<p>$$\frac{\partial L(b,w,,\alpha)}{\partial w}=0=w_i-\sum_{n=1}^{N}\alpha_{n}y_nz_{n,i}\qquad(2.7)$$</p>
+<p>将公式2.6代入2.5化简去掉含$b$项：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0,\sum_{n=1}^{N}\alpha_ny_n=0}{max}\underset{b,w}{min}(\frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}(1-y_n(w^Tz_n)))\qquad(2.8)$$</p>
+<p>进一步根据公式2.7将$w=\sum_{n=1}^{N}\alpha_{n}y_nz_{n}$代入公式2.8，化简得：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0,\sum_{n=1}^{N}\alpha_ny_n=0,w=\sum_{n=1}^{N}\alpha_{n}y_nz_{n}}{max}\underset{b,w}{min}(\frac{1}{2}w^Tw + \sum_{n=1}^{N}\alpha_{n}-w^Tw)\qquad(2.9)$$</p>
+<p>继续化简：</p>
+<p>$$\underset{all\,\alpha_n&gt;=0,\sum_{n=1}^{N}\alpha_ny_n=0,w=\sum_{n=1}^{N}\alpha_{n}y_nz_{n}}{max} -\frac{1}{2}\left \| \sum_{n=1}^{N}a_ny_nz_n \right \|^2 + \sum_{n=1}^{N}\alpha_{n})\qquad(2.10)$$</p>
+<p>上述对偶问题（公式2.10）的解决复杂度已经如前面所说，与特征维度无关，并且可以用QP solver求解出对偶问题的解$\alpha^q$。解出$\alpha$之后对应的$w^q$,$b^q$自然也可求出：</p>
+<p>$$w^q = \sum_{n=1}^{N}\alpha_{n}y_nz_{n}\qquad b^q = y_j-\sum_{n=1}^{N}\alpha_iy_i(x_i*x_j)$$</p>
+<p>那么问题来了，对偶问题求出的解$w^q,b^q$是否就是原始问题的解呢？</p>
+<p>此时需要引入一个<em>KKT条件</em>（详情可自行google）：$\alpha^q$和$w^q$,$b^q$分别是对偶问题和原始问题的解的充分必要条件是$\alpha^q$和$w^q$,$b^q$满足KKT条件。所以最终求出的SVM的分类决策函数：
+0
+$$g_{svm}(x) = sign(w^T\Phi (x)+b)$$</p>
+<p>至此，我们就已经解出了SVM的对偶问题。我们把所有$\alpha_n&gt;0$的样本$(z_n,y_n)$叫做<strong>支持向量</strong>，下图中距离分类边界最近的三个用正方形框出的点即支持向量，$w,b$的值仅取决于支持向量。</p>
+<p><center><img alt="sv" src="http://7nio4l.com1.z0.glb.clouddn.com/svm-sv.jpg" /></center></p>
+<p>总结的说，将原始SVM问题转换为对偶问题可使问题复杂度不与特征维度大小相关，而转换后的对偶问题满足KKT条件，所以对偶问题的解也就是原始问题的解。</p>
+<h1>Reference</h1>
+<hr />
+<ol>
+<li>
+<p>《统计学习方法》，李航</p>
+</li>
+<li>
+<p>《机器学习技法》，林轩田</p>
+</li>
+</ol><script type= "text/javascript">
+    if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+        var mathjaxscript = document.createElement('script');
+        mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+        mathjaxscript.type = 'text/javascript';
+        mathjaxscript.src = 'https:' == document.location.protocol
+                ? 'https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+                : 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+        mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+            "MathJax.Hub.Config({" +
+            "    config: ['MMLorHTML.js']," +
+            "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+            "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+            "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+            "    displayAlign: 'center'," +
+            "    displayIndent: '0em'," +
+            "    showMathMenu: true," +
+            "    tex2jax: { " +
+            "        inlineMath: [ ['$','$'] ], " +
+            "        displayMath: [ ['$$','$$'] ]," +
+            "        processEscapes: true," +
+            "        preview: 'TeX'," +
+            "    }, " +
+            "    'HTML-CSS': { " +
+            "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+            "    } " +
+            "}); ";
+        (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+    }
+</script>
+                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>python学习--itertools模块</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li class="active"><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="http://backnode.github.io/pages/2015/03/29/python-itertools.html" rel="bookmark"
+           title="Permalink to python学习--itertools模块">python学习--itertools模块</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <span>2015-03-29</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a></span>
+</footer><!-- /.post-info -->      <h1>python学习：itertools</h1>
+<p>itertools模块包含一系列迭代数据集的函数，如下三个表格：</p>
+<p><img alt="iterators" src="http://keepcodingblog.qiniudn.com/iterators.jpg" /></p>
+<p>下面挑常用的举例学习一下：</p>
+<h2>itertools.count(start=0,step=1)和itertools.izip(*iterables)</h2>
+<p>count()函数生成从start(default=0)开始的以step(default=1)为步长的连续整数，
+izip()函数将多个迭代器中的元素合并为一个元组并作为一个迭代器返回，类似于zip()函数
+使用：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">In</span> <span class="p">[</span><span class="mi">2</span><span class="p">]:</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">izip</span><span class="p">(</span><span class="n">count</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">2</span><span class="p">),[</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;c&#39;</span><span class="p">]):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="n">i</span> 
+   <span class="o">...</span><span class="p">:</span>     
+<span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s">&#39;a&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>itertools.cycle(iterable)</h2>
+<p>cycle()函数返回一个迭代器，这个迭代器循环重复参数内容，使用：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">4</span><span class="p">]:</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">izip</span><span class="p">(</span><span class="n">cycle</span><span class="p">([</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">]),[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="n">i</span>
+   <span class="o">...</span><span class="p">:</span>     
+<span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>itertools.repeat(elem,n)</h2>
+<p>repeat()函数返回一个迭代去，这个迭代器将重复elem元素n次，使用：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">5</span><span class="p">]:</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">izip</span><span class="p">(</span><span class="n">repeat</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">6</span><span class="p">),[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="n">i</span>
+   <span class="o">...</span><span class="p">:</span>     
+<span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>itertools.imap(function,*iterables)</h2>
+<p>创建一个迭代器，生成项function(i1, i2, ..., iN)，其中i1，i2...iN分别来自迭代器iter1，iter2 ... iterN，如果function为None，则返回(i1, i2, ..., iN)形式的元组，只要提供的迭代器中任意一个迭代器不再生成值，迭代就会停止。
+repeat结合imap使用：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">9</span><span class="p">]:</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">imap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="p">),</span><span class="n">repeat</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span><span class="nb">xrange</span><span class="p">(</span><span class="mi">4</span><span class="p">)):</span>
+   <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="s">&quot;{} * {} = {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">i</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+   <span class="o">...</span><span class="p">:</span>     
+<span class="mi">3</span> <span class="o">*</span> <span class="mi">0</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="mi">3</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="mi">3</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="mi">3</span> <span class="o">*</span> <span class="mi">3</span> <span class="o">=</span> <span class="mi">9</span>
+</pre></div>
+
+
+<h2>itertools.chain(*iterables)</h2>
+<p>正如chain()函数的名字一样，它将多个迭代器<strong>链</strong>起来，返回一个迭代器，这个迭代器中包含所有参数迭代器的内容，使用：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">10</span><span class="p">]:</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">],[</span><span class="s">&#39;X&#39;</span><span class="p">,</span><span class="s">&#39;Y&#39;</span><span class="p">]):</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="n">i</span>
+    <span class="o">...</span><span class="p">:</span>     
+<span class="mi">1</span>
+<span class="mi">2</span>
+<span class="n">a</span>
+<span class="n">b</span>
+<span class="n">X</span>
+<span class="n">Y</span>
+</pre></div>
+
+
+<h2>itertools.compress(data,selectors)</h2>
+<p>根据selectors对data进行筛选</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">compress</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">selectors</span><span class="p">):</span>
+    <span class="c"># compress(&#39;ABCDEF&#39;, [1,0,1,0,1,1]) --&gt; A C E F</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">izip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">selectors</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>itertools.dropwhile(predicate,iterable)</h2>
+<p>当predicate为True时，则drop掉iterable中的元素；一旦predicate为False，则返回iterable中的当前元素和后续元素，使用：</p>
+<div class="highlight"><pre><span class="n">In</span> <span class="p">[</span><span class="mi">11</span><span class="p">]:</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">dropwhile</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]):</span>
+    <span class="o">...</span><span class="p">:</span>     <span class="k">print</span> <span class="n">i</span>
+    <span class="o">...</span><span class="p">:</span>     
+<span class="mi">3</span>
+<span class="mi">4</span>
+<span class="mi">5</span>
+<span class="mi">6</span>
+</pre></div>
+
+
+<h2>参考</h2>
+<p>1.http://wklken.me/posts/2013/08/20/python-extra-itertools.html</p>
+<p>2.https://docs.python.org/2/library/itertools.html</p>
+<p>3.http://pymotw.com/2/itertools/</p>
+    </div><!-- /.entry-content -->
+
+	<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/03/29/python-itertools.html">BackNode</a></p>
+
+
+  </article>
+<center>
+<p><img alt="My zhiFuBao" src="http://keepcodingblog.qiniudn.com/My-zhifubao.jpg" /></p>
+<p>Buy me a cup of coffee</p>
+</center>
+		<div id="ds-thread" class="ds-thread" data-thread-key="http://backnode.github.io/pages/2015/03/29/python-itertools.html" data-title="python学习--itertools模块" data-url="http://backnode.github.io/pages/2015/03/29/python-itertools.html"></div>
+			<script type="text/javascript">
+				var duoshuoQuery = {short_name:"johnsonblog"};
+				(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					 || document.getElementsByTagName('body')[0]).appendChild(ds);
+				})();
+			</script>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

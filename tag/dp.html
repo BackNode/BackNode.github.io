@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - dp</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/04/14/knapsack-dp.html">离散优化之Knapsack问题（一）：动态规划</a></h1>
+<footer class="post-info">
+        <span>2015-04-14</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/dp.html">dp</a></span>
+</footer><!-- /.post-info --><h1>knapsack问题之动态规划</h1>
+<h2>问题描述</h2>
+<p>你有一个负重量为<code>capacity</code>的背包，摆在你面前的是一堆宝物，宝物有重量<code>weight</code>和价值<code>value</code>，你要在你的背包中装下宝物将它们占为己有，因此你希望背包中的宝物负重量不超过<code>capacity</code>，同时背包中的宝物的价值<code>value</code>尽可能的大。
+输入：</p>
+<div class="highlight"><pre><span class="mi">4</span> <span class="mi">11</span> 
+<span class="mi">8</span> <span class="mi">4</span>
+<span class="mi">10</span> <span class="mi">5</span>
+<span class="mi">15</span> <span class="mi">8</span>
+<span class="mi">4</span> <span class="mi">3</span>
+</pre></div>
+
+
+<p>第一行<code>4 11</code>表示宝物数量<code>item_count</code>为4，背包负重量<code>capacity</code>为11
+接下来为<code>item_count</code>行，每行第一个元素是该宝物的价值<code>value</code>，第二个元素是该宝物的重量<code>weight</code>。</p>
+<h2>问题建模</h2>
+<p><img alt="数学模型" src="http://keepcodingblog.qiniudn.com/knapsack-modeling.jpg" /></p>
+<p><code>x[i]=1</code>表示选中宝物<code>i</code>,<code>x[i]=0</code>表示不选宝物<code>i</code>；<code>w[i]</code>和<code>v[i]</code>分别表示第<code>i</code>个宝物的重量和价值。<code>K</code>指背包负重量<code>capacity</code>。</p>
+<h2>解决方法</h2>
+<p>这个问题我们可以先用递归法理一下思路：
+1）假设我们已经知道如何解决“<code>j-1</code>个宝物，<code>capacity</code>为<code>k</code>(<code>k</code>为0，...，<code>K</code>)”这个子问题，即：</p>
+<div class="highlight"><pre><span class="n">O</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="nb">all</span> <span class="n">k</span> <span class="ow">in</span> <span class="mf">0.</span><span class="o">..</span><span class="n">K</span>
+</pre></div>
+
+
+<p>2）我们想要解出<code>O(k,j)</code>，即添加一个宝物进去
+3）如果<code>w[j] &lt; k</code>，那么存在两种情况：1.不选择第<code>j</code>个宝物，那么解为<code>O(k,j-1)</code>；2.选择第<code>j</code>个宝物，那么解为<code>v[j] + O(k-w[j], j-1)</code>
+总结伪代码如下：</p>
+<div class="highlight"><pre><span class="n">O</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">for</span> <span class="nb">all</span> <span class="n">k</span>
+<span class="n">O</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">O</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">v</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">O</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">k</span>
+<span class="n">O</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="o">=</span> <span class="n">O</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="n">otherwise</span>
+</pre></div>
+
+
+<p>但是实际中这个<strong>自顶向下</strong>的递归非常耗时，因为它有大量重复计算，我们需要将它改造成<strong>自底向上</strong>的算法，我们可以通过一个二维表来实现。</p>
+<p>假设我们要解决以下具体问题：</p>
+<p><img alt="具体问题" src="http://keepcodingblog.qiniudn.com/knapsack-dp-1.jpg" /></p>
+<p>下面我们要构造一个二维数组，列向是<code>capacity</code>（<code>0~K</code>）,横向是所有的宝物，我们根据上文中的伪代码在数组中填入数值，下面图中的箭头出发位置的值应该是多少？在<code>w[j] &lt;= k</code>的情况下，我们有两种选择：</p>
+<p><img alt="table1" src="http://keepcodingblog.qiniudn.com/knapsack-table-1.jpg" /></p>
+<p>1）如果我们不选择第三个宝物，那么背包中宝物的价值和是水平箭头所指的值<code>6</code>（即<code>O(k,j-1)</code>）；
+2）如果我们选择第三个宝物，那么背包中宝物的价值和是斜箭头所指的值<code>5</code>加上第三个宝物的价值<code>3</code>即<code>8</code>（<code>v[j] + O(k-w[j], j-1)</code>）。
+两种选择中选最大值，所以是<code>8</code>。
+以此类推，我们可以算完整个表格，在表格的右下角就是我们想要的值。</p>
+<p><img alt="table2" src="http://keepcodingblog.qiniudn.com/knapsack-table-2.jpg" /></p>
+<p>但是我们如何得出具体的选择方案呢？很简单，我们从右下角往回走，如果它跟它左边格子的值相等，意味着我们没有选择这个宝物（图中<code>11 == 11</code>，没有选择宝物<code>3</code>）；如果它跟它左边格子的值不想等，意味着我们选择了这个宝物，再往回走的时候就应该减去这个宝物的价值<code>value</code>（图中<code>11 - 6 = 5</code>）。
+以此类推，我们可以知道我们选择了宝物<code>1</code>和宝物<code>2</code>。</p>
+<p><img alt="table3" src="http://keepcodingblog.qiniudn.com/knapsack-table-3.jpg" /></p>
+<h2>memory</h2>
+<p>我们回想一下这个算法的空间占用情况，发现它计算了一个<code>capacity * item_count</code>大小的表格，<code>item_count</code>是跟输入规模有关的，但是<code>capacity</code>却不是。这个算法的内存占用大小竟然要受一个输入参数值的大小的影响！！假设<code>capacity</code>大小为100W，而<code>item_count</code>只有100，我们就需要计算一个<code>1000000 * 100</code>的表格，也就是说在<code>capacity</code>非常大的情况下这个算法会非常占内存。</p>
+<h2>show me the code</h2>
+<div class="highlight"><pre><span class="c">#!/usr/bin/python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="n">Item</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&quot;Item&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">,</span> <span class="s">&#39;weight&#39;</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">solve_it</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
+    <span class="c"># Modify this code to run your optimization algorithm</span>
+
+    <span class="c"># parse the input</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="n">firstLine</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">item_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">firstLine</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">capacity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">firstLine</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">item_count</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Item</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+    <span class="c"># a trivial greedy algorithm for filling the knapsack</span>
+    <span class="c"># it takes items in-order until the knapsack is full</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">taken</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+
+    <span class="c">############################## sulution #################################</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">capacity</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">item_count</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">item_count</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">capacity</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">items</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">items</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">items</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">capacity</span><span class="p">][</span><span class="n">item_count</span><span class="p">]</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">item_count</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">capacity</span>
+    <span class="k">while</span> <span class="n">j</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">taken</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">-</span> <span class="n">items</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span>
+        <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="c"># prepare the solution in the specified output format</span>
+    <span class="n">output_data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+    <span class="n">output_data</span> <span class="o">+=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">taken</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">output_data</span>
+    <span class="c">############################################################################</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">file_location</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">input_data_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_location</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data_file</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+        <span class="n">input_data_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">print</span> <span class="n">solve_it</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;This test requires an input file.  Please select one from the data directory. (i.e. python solver.py ./data/ks_4_0)&#39;</span>
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

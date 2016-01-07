@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - bnb</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2015/04/16/knapsack-bnb.html">离散优化之Knapsack问题（二）：relaxation, branch and bound</a></h1>
+<footer class="post-info">
+        <span>2015-04-16</span>
+<span>| tags: <a href="http://backnode.github.io/tag/python.html">python</a><a href="http://backnode.github.io/tag/bnb.html">bnb</a></span>
+</footer><!-- /.post-info --><h1>knapsack问题之relaxation, branch and bound</h1>
+<p>转载请注明出处：<a href="http://backnode.github.io/pages/2015/04/16/knapsack-bnb.html">BackNode</a>
+我们接着上回（<a href="http://backnode.github.io/pages/2015/04/14/knapsack-dp.html">传送门：动态规划</a>）继续分析knapsack问题。</p>
+<h2>问题描述</h2>
+<p>你有一个负重量为<code>capacity</code>的背包，摆在你面前的是一堆宝物，宝物有重量<code>weight</code>和价值<code>value</code>，你要在你的背包中装下宝物将它们占为己有，因此你希望背包中的宝物负重量不超过<code>capacity</code>，同时背包中的宝物的价值<code>value</code>尽可能的大。
+输入：</p>
+<div class="highlight"><pre><span class="mi">4</span> <span class="mi">11</span> 
+<span class="mi">8</span> <span class="mi">4</span>
+<span class="mi">10</span> <span class="mi">5</span>
+<span class="mi">15</span> <span class="mi">8</span>
+<span class="mi">4</span> <span class="mi">3</span>
+</pre></div>
+
+
+<p>第一行<code>4 11</code>表示宝物数量<code>item_count</code>为4，背包负重量<code>capacity</code>为11
+接下来为<code>item_count</code>行，每行第一个元素是该宝物的价值<code>value</code>，第二个元素是该宝物的重量<code>weight</code>。</p>
+<h2>数学模型</h2>
+<p><img alt="模型" src="http://keepcodingblog.qiniudn.com/knapsack-model-2.jpg" /></p>
+<h2>解决方法</h2>
+<p>对于每一个宝物，我们面临着两个选择：1.把它放进背包;2.不把它放进背包。我们可以用一棵二叉树来表示所有可能的情况，左节点表示把宝物放进背包，右节点表示不把宝物放进背包：</p>
+<p><img alt="二叉树" src="http://keepcodingblog.qiniudn.com/tree-1.jpg" /></p>
+<p>遍历完这颗完整二叉树仍然需要非常大的计算量，我们需要考虑给这棵树修建一下，找一个园丁来给它剪剪枝（<code>pruning</code>）。<strong>对于每一个节点，我们预估一下它能取得的最高价值（<code>estimate</code>），如果一个节点的<code>estimate</code>比当前取得的最高价值（<code>best_value</code>）还要低，那么我们就没有必要继续遍历这个节点的子节点了，因为反正它不可能取得比它的<code>estimate</code>还要高的价值，这样我们就从这个节点砍下一刀，剪去了它的子节点。</strong>那么问题来了，我们如何算出<code>estimate</code>值呢？让我们将注意力转移到这个问题的限制条件上：背包的负重量<code>capacity</code>。假设我们有一个非常神奇的背包，它的负重量无穷大，那我们可以在根节点的时候算出它的<code>estimate</code>值：所有宝物价值之和。我们不可能取得比这更大的值了，这样我们就通过<code>relaxation</code>得到了<code>bound</code>。下面我们看看详细过程：</p>
+<p><img alt="tree-2" src="http://keepcodingblog.qiniudn.com/tree-2.jpg" /></p>
+<p>每一个节点有三个属性：<code>value</code>,<code>room</code>,<code>estimate</code>。<code>value</code>表示该节点目前取得的宝物价值，<code>room</code>表示该节点背包剩余空间。
+1）当节点空间小于0时，表明这个方案是行不通的。
+2）当节点<code>estimate</code>小于目前找到的方案中取得的最高宝物价值（<code>best_value</code>）时，表明它的子节点没有必要再遍历了。
+3）当遍历到叶子节点时，如果它的<code>value</code>比<code>best_value</code>要高，并且它的空间<code>room</code>不小于0，那么我们就找到了一个更好的方案，将这个方案标记为目前找到的最佳方案（<code>value</code>=<code>best_value</code>）。
+这样，当我们遍历完成之后，一定能找到一个最佳方案。</p>
+<h2>relax something else</h2>
+<p>回想一下，上面的relax步骤中，我们一下将背包的负重量调到了无穷大，我们是不是太大方了？导致最后剪掉的枝干并不是很多，让我们试试有没有其他地方可以relax的。<strong>假设我们的宝物不是完整不可分割的，而是可以像巧克力一样可以掰开的。</strong>这样我们就可以按照价值重量比从高到低选取宝物，选到装不下的时候，将宝物掰开放进去使背包刚好装满，那样我们一定就带走了最有价值的宝物。按照这个方法计算<code>estimate</code>，我们可以剪掉更多的枝干。</p>
+<p><img alt="tree-3" src="http://keepcodingblog.qiniudn.com/tree-3.jpg" /></p>
+<p><strong>注意：在每次计算节点<code>estimate</code>值的时候，每次我们都要根据剩下宝物的信息计算<code>estimate</code></strong>。</p>
+<h2>show me the code</h2>
+<div class="highlight"><pre><span class="c">#!/usr/bin/python</span>
+<span class="c"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="k">class</span> <span class="nc">Stack</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">room</span><span class="p">,</span> <span class="n">estimate</span><span class="p">,</span> <span class="n">take</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">room</span> <span class="o">=</span> <span class="n">room</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimate</span> <span class="o">=</span> <span class="n">estimate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">take</span> <span class="o">=</span> <span class="n">take</span>
+
+<span class="n">Item</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&quot;Item&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;index&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">,</span> <span class="s">&#39;weight&#39;</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">solve_it</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
+    <span class="c"># Modify this code to run your optimization algorithm</span>
+
+    <span class="c"># parse the input</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">input_data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="n">firstLine</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">item_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">firstLine</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">capacity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">firstLine</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">item_count</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Item</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+    <span class="c">################################ solution 1 #######################################</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">Stack</span><span class="p">()</span>
+
+    <span class="n">sorted_items</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">tup</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">tup</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="n">tup</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">calEstimate</span><span class="p">(</span><span class="n">room</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+        <span class="n">estimate</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sorted_items</span><span class="p">[</span><span class="n">depth</span><span class="p">::]:</span>
+            <span class="k">if</span> <span class="n">weight</span> <span class="o">+</span> <span class="n">item</span><span class="o">.</span><span class="n">weight</span> <span class="o">&lt;=</span> <span class="n">room</span><span class="p">:</span>
+                <span class="n">estimate</span> <span class="o">+=</span> <span class="n">item</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">weight</span> <span class="o">+=</span> <span class="n">item</span><span class="o">.</span><span class="n">weight</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">estimate</span> <span class="o">+=</span> <span class="n">item</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">room</span><span class="p">)</span> <span class="o">-</span> <span class="n">weight</span><span class="p">)</span> <span class="o">/</span> <span class="n">item</span><span class="o">.</span><span class="n">weight</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">estimate</span>
+
+    <span class="n">max_estimate</span> <span class="o">=</span> <span class="n">calEstimate</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">best_value</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">best_taken</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">item_count</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">current_taken</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">item_count</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">max_estimate</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">room</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">current</span><span class="o">.</span><span class="n">estimate</span> <span class="o">&lt;</span> <span class="n">best_value</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span> <span class="n">current</span><span class="o">.</span><span class="n">depth</span> <span class="o">&lt;</span> <span class="n">item_count</span><span class="p">:</span>
+            <span class="n">left_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">sorted_items</span><span class="p">[</span><span class="n">current</span><span class="o">.</span><span class="n">depth</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">room</span> <span class="o">-</span> <span class="n">sorted_items</span><span class="p">[</span><span class="n">current</span><span class="o">.</span><span class="n">depth</span><span class="p">]</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span>
+                    <span class="mi">1</span><span class="p">)</span>
+            <span class="n">right_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">room</span><span class="p">,</span>
+                    <span class="n">current</span><span class="o">.</span><span class="n">value</span> <span class="o">+</span> <span class="n">calEstimate</span><span class="p">(</span><span class="n">current</span><span class="o">.</span><span class="n">room</span><span class="p">,</span> <span class="n">current</span><span class="o">.</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+                    <span class="mi">0</span><span class="p">)</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">right_node</span><span class="p">)</span>
+            <span class="n">stack</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">left_node</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">depth</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">current_taken</span><span class="p">[</span><span class="n">sorted_items</span><span class="p">[</span><span class="n">current</span><span class="o">.</span><span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">take</span>
+        <span class="k">elif</span> <span class="n">current</span><span class="o">.</span><span class="n">depth</span> <span class="o">==</span> <span class="n">item_count</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">current</span><span class="o">.</span><span class="n">value</span> <span class="o">&gt;</span> <span class="n">best_value</span> <span class="ow">and</span> <span class="n">current</span><span class="o">.</span><span class="n">room</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">best_value</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">value</span>
+                <span class="n">current_taken</span><span class="p">[</span><span class="n">sorted_items</span><span class="p">[</span><span class="n">current</span><span class="o">.</span><span class="n">depth</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">current</span><span class="o">.</span><span class="n">take</span>
+                <span class="n">best_taken</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">current_taken</span><span class="p">)</span>
+    <span class="c">############################################################################</span>
+
+    <span class="n">output_data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">best_value</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+    <span class="n">output_data</span> <span class="o">+=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">best_taken</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">output_data</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">file_location</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">input_data_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_location</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data_file</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+        <span class="n">input_data_file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">print</span> <span class="n">solve_it</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;This test requires an input file.  Please select one from the data directory. (i.e. python solver.py ./data/ks_4_0)&#39;</span>
+</pre></div>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

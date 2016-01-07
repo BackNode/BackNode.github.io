@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Keep Learning - pythonChallenge</title>
+        <link rel="stylesheet" href="http://backnode.github.io/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+ 	    <link rel="shortcut icon" href="http://backnode.github.io/theme/img/favicon.ico">
+
+</head>
+
+<body id="index" class="home">
+<a href="https://github.com/BackNode/BackNode.github.io">
+<img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
+</a>
+        <header id="banner" class="body">
+                <h1><a href="http://backnode.github.io/">Keep Learning </a></h1>
+                <nav><ul>
+                    <li><a href="http://backnode.github.io/category/ml.html">ML</a></li>
+                    <li><a href="http://backnode.github.io/category/opencv.html">opencv</a></li>
+                    <li><a href="http://backnode.github.io/category/others.html">Others</a></li>
+                    <li><a href="http://backnode.github.io/category/python.html">Python</a></li>
+				<li class="active"><a href="http://backnode.github.io/archives.html">Archives</a></li>
+                </ul>
+<form id="search" action"#" onsubmit="javascript:window.open('http://google.com/?q='+document.getElementById('keywords').value+'+site:http://backnode.github.io');">
+                        <input id="keywords" type="text" />
+                    </form>
+                </nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="http://backnode.github.io/pages/2014/11/29/python_challenge.html">pythonChallenge攻略</a></h1>
+<footer class="post-info">
+        <span>2014-11-29</span>
+<span>| tags: <a href="http://backnode.github.io/tag/pythonchallenge.html">pythonChallenge</a></span>
+</footer><!-- /.post-info --><p>http://www.pythonchallenge.com/是一个非常棒的练习python的网站，以过关解密的形式来帮助你学习python，现将我的解密过程记录如下。</p>
+<h1>第0关：warming up</h1>
+<p>这关就一张图片，显示2的38次方，下方提示：try to change the URL address
+OK，那我们就计算一下2的38次方，在python中输入：</p>
+<div class="highlight"><pre>2**38
+</pre></div>
+
+
+<p>在python中两个*号表示次方运算，得出答案：</p>
+<div class="highlight"><pre>&gt;&gt;&gt; 2**38
+274877906944L
+</pre></div>
+
+
+<p>根据提示修改url，将0替换成上面这串数字，然后网页提示L不需要，我们去掉L再替换，
+过关！</p>
+<h1>第1关：what about making trans</h1>
+<p>图中显示将字母k换成m，o换成q，e换成g，即每个字母往后推移两位，看来得将下面那一
+大段字符转换一下，这里使用两个函数chr(),和ord().</p>
+<div class="highlight"><pre><span class="n">string</span> <span class="o">=</span> <span class="s">&quot;g fmnc wms bgblr rpylqjyrc gr zw fylb. rfyrq ufyr amknsrcpq ypc dmp. bmgle gr gl zw fylb gq glcddgagclr ylb rfyr&#39;q ufw rfgq rcvr gq qm jmle. sqgle qrpgle.kyicrpylq() gq pcamkkclbcb. lmu ynnjw ml rfc spj. &quot;</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">string</span><span class="p">:</span>
+ <span class="k">if</span> <span class="nb">ord</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">122</span> <span class="ow">and</span> <span class="nb">ord</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">97</span><span class="p">:</span>
+     <span class="k">if</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">122</span><span class="p">:</span>
+             <span class="k">print</span> <span class="nb">chr</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="o">-</span><span class="mi">26</span><span class="p">),</span>
+     <span class="k">else</span><span class="p">:</span>
+             <span class="k">print</span> <span class="nb">chr</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">),</span>
+ <span class="k">else</span><span class="p">:</span>
+     <span class="k">print</span> <span class="n">x</span><span class="p">,</span>
+</pre></div>
+
+
+<p>得到的结果是：</p>
+<div class="highlight"><pre>    i   h o p e   y o u   d i d n t   t r a n s l a t e   i t   b y   h a n d .   t h a t s   w h a t   c o m p u t e r s   a r e   f o r .   d o i n g   i t   i n   b y   h a n d   i s   i n e f f i c i e n t   a n d   t h a t &#39; s   w h y   t h i s   t e x t   i s   s o   l o n g .   u s i n g   s t r i n g . m a k e t r a n s ( )   i s   r e c o m m e n d e d .   n o w   a p p l y   o n   t h e   u r l .
+</pre></div>
+
+
+<p>结果告诉我们将url也转换一下，即将map换成ocr，过关！</p>
+<h1>第2关：ocr</h1>
+<p>按照提示看网页源代码，发现网页下方有一大串字符串注释，开头告诉我们
+find rare characters in the mess below:
+那我们就找出出现次数最少的字母。
+这么一大串字符，我们选择将它保存在一个文件中，通过文件来读取内容，保存为ocr.html</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span><span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;ocr.html&#39;</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">text</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span><span class="nb">dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="o">&gt;&gt;&gt;</span><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="nb">dict</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">dict</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="o">&gt;&gt;&gt;</span><span class="nb">dict</span>
+</pre></div>
+
+
+<p>这样之后我们便可以看到dict中的内容了，看看都是些什么玩意</p>
+<div class="highlight"><pre>    {&#39;\n&#39;: 1220, &#39;!&#39;: 6080, &#39;#&#39;: 6115, &#39;%&#39;: 6104, &#39;$&#39;: 6046, &#39;&amp;&#39;: 6043, &#39;)&#39;: 6186, &#39;(&#39;: 6154, &#39;+&#39;: 6066, &#39;*&#39;: 6034, &#39;-&#39;: 4, &#39;&lt;&#39;: 1, &#39;&gt;&#39;: 1, &#39;@&#39;: 6157, &#39;[&#39;: 6108, &#39;]&#39;: 6152, &#39;_&#39;: 6112, &#39;^&#39;: 6030, &#39;a&#39;: 1, &#39;e&#39;: 1, &#39;i&#39;: 1, &#39;l&#39;: 1, &#39;q&#39;: 1, &#39;u&#39;: 1, &#39;t&#39;: 1, &#39;y&#39;: 1, &#39;{&#39;: 6046, &#39;}&#39;: 6105}
+</pre></div>
+
+
+<p>里面的字母出现次数至少为1,好，那我们就找出出现次数为1的几个字母。</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span><span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">dict</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">y</span><span class="p">,</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+<span class="n">a</span> <span class="n">e</span> <span class="n">i</span> <span class="n">l</span> <span class="n">q</span> <span class="n">u</span> <span class="n">t</span> <span class="n">y</span>
+</pre></div>
+
+
+<p>组合一下就是equality，过关！</p>
+<h1>第3关：re</h1>
+<p>看标题便知道这关要靠正则表达式，先看提示：One small letter, surrounded by
+ EXACTLY three big bodyguards on each of its sides. 意思是一个小写字母两边都被三
+个大写字母包围着，EXACTLY提醒我们正好是三个大写字母。那么匹配字符串在哪里呢？
+按照上一题的思路，看网页源码，果然，又是一大串字符，照例保存在文件中，re.html。</p>
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span><span class="nb">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;re.html&#39;</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">text</span> <span class="o">=</span> <span class="nb">file</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">r&#39;[a-z][A-Z]{3}[a-z][A-Z]{3}[a-z]&#39;</span><span class="p">,</span><span class="n">text</span><span class="p">)</span>
+</pre></div>
+
+
+<p>一下是筛选出来的字符串：</p>
+<div class="highlight"><pre>[&#39;qIQNlQSLi&#39;, &#39;eOEKiVEYj&#39;, &#39;aZADnMCZq&#39;, &#39;bZUTkLYNg&#39;, &#39;uCNDeHSBj&#39;, &#39;kOIXdKBFh&#39;, &#39;dXJVlGZVm&#39;, &#39;gZAGiLQZx&#39;, &#39;vCJAsACFl&#39;, &#39;qKWGtIDCj&#39;]
+</pre></div>
+
+
+<p>取最中间的小写字母组成‘linkedlist’，改url，根据提示再改成php页面，过关！</p>
+<h1>第4关</h1>
+<p>只有一张图，什么也没说，国际惯例，看源码，果然：</p>
+<blockquote>
+<p>urllib may help. DON'T TRY ALL NOTHINGS, since it will never 
+end. 400 times is more than enough.</p>
+</blockquote>
+<p>看来是要用urlib模块了，但是具体应该做什么呢？我们再看看图片，点击图片链接，发现
+页面上面说：</p>
+<blockquote>
+<p>and the next nothing is 44827</p>
+</blockquote>
+<p>这又是什么意思？我们再看看地址栏，发现刚刚点击链接之后我们给网页发送了一个值：</p>
+<blockquote>
+<p>nothing=12345</p>
+</blockquote>
+<p>那接下来的nothing值就是44827了，但是肯定不能手工做，这就是考点了。</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">&#39;http://www.pythonchallenge.com/pc/def/linkedlist.php?nothing=&#39;</span>
+<span class="n">keyvalue</span> <span class="o">=</span> <span class="s">&#39;12345&#39;</span>
+<span class="n">fullurl</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="n">keyvalue</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">400</span><span class="p">):</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">fullurl</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">keyvalue</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">r&#39;and the next nothing is (\d*)&#39;</span><span class="p">,</span><span class="n">text</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">fullurl</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="n">keyvalue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">e</span><span class="p">:</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">fullurl</span>
+</pre></div>
+
+
+<p>最后我们得到的url是：</p>
+<blockquote>
+<p>http://www.pythonchallenge.com/pc/def/linkedlist.php?nothing=16044</p>
+</blockquote>
+<p>进入这个网页，网页提示：</p>
+<blockquote>
+<p>Yes. Divide by two and keep going.</p>
+</blockquote>
+<p>OK,除以2就除以2，nothing=8022，进入网页：</p>
+<blockquote>
+<p>and the next nothing is 25357</p>
+</blockquote>
+<p>我去！还来？！！
+好吧，再来一次...最后得到的nothing=66831,进入网页：</p>
+<blockquote>
+<p>peak.html</p>
+</blockquote>
+<p>这次就对了，过关！</p>
+<h1>第5关：peak hell</h1>
+<p>一座山，下面提示是：</p>
+<blockquote>
+<p>pronounce it </p>
+</blockquote>
+<p>不明觉厉，好吧，国际惯例看源码，最下面的注释说：</p>
+<blockquote>
+<p>peak hell sounds familiar ?</p>
+</blockquote>
+<p>peak hell，peak hell，pickle？试试，将url改成pickle.html,进去：</p>
+<blockquote>
+<p>yes! pickle! </p>
+</blockquote>
+<p>看来是pickle模块了，pickle模块是用于序列化对象，永久存储对象的，那么我们要
+操作的对象在哪呢？返回peak.html去看源码，我们发现有一行是这样的：</p>
+<blockquote>
+<p><peakhell src="banner.p"></peakhell></p>
+</blockquote>
+<p>我们将url改成banner.p，发现可以下载一个叫banner.p的文件，看来这就是我们要
+操作的对象了，上代码：</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="n">peakhell</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&quot;banner.p&quot;</span><span class="p">,</span><span class="s">&quot;r&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="k">print</span> <span class="n">peakhell</span>
+</pre></div>
+
+
+<p>我们看一下这里面到底是个什么玩意？</p>
+<blockquote>
+<p>[[(' ', 95)], [(' ', 14), ('#', 5), (' ', 70), ('#', 5), (' ', 1)],.....]</p>
+</blockquote>
+<p>这是一个大list，大list由一个个小list组成，小list里面是一个或多个tuple，每个
+tuple中有两个元素，第一个元素是一个字符，要么是' ',要么是'#'，第二个元素是一
+个整数，观察一下，发现每个小list中的整数元素加起来都是95,那应该是打印95个对
+应的字符了，上代码：</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">smalllist</span> <span class="ow">in</span> <span class="n">peakhell</span><span class="p">:</span>
+<span class="n">string</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="k">for</span> <span class="n">meta</span> <span class="ow">in</span> <span class="n">smalllist</span><span class="p">:</span>
+        <span class="n">string</span> <span class="o">+=</span> <span class="n">meta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">meta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span> <span class="n">string</span>
+</pre></div>
+
+
+<div class="highlight"><pre>          #####                                                                      ##### 
+           ####                                                                       #### 
+           ####                                                                       #### 
+           ####                                                                       #### 
+           ####                                                                       #### 
+           ####                                                                       #### 
+           ####                                                                       #### 
+           ####                                                                       #### 
+  ###      ####   ###         ###       #####   ###    #####   ###          ###       ####
+</pre></div>
+
+
+<p>###   ##    #### #######     ##  ###      #### #######   #### #######     ###  ###     #### 
+  ###     ###  #####    ####   ###   ####    #####    ####  #####    ####   ###     ###   #### 
+ ###           ####     ####   ###    ###    ####     ####  ####     ####  ###      ####  #### 
+ ###           ####     ####          ###    ####     ####  ####     ####  ###       ###  #### </p>
+<h4>####     ####     ##   ###    ####     ####  ####     #### ####       ###  ####</h4>
+<h4>####     ####   ##########    ####     ####  ####     #### ##############  ####</h4>
+<h4>####     ####  ###    ####    ####     ####  ####     #### ####            ####</h4>
+<h4>####     #### ####     ###    ####     ####  ####     #### ####            ####</h4>
+<p>###           ####     #### ####     ###    ####     ####  ####     ####  ###            #### 
+  ###      ##  ####     ####  ###    ####    ####     ####  ####     ####   ###      ##   #### 
+   ###    ##   ####     ####   ###########   ####     ####  ####     ####    ###    ##    #### 
+      ###     ######    #####    ##    #### ######    ###########    #####      ###      ######</p>
+<p>channel.html,过关！</p>                </article>
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </aside><!-- /#featured -->
+            </ol><!-- /#posts-list -->
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="https://wen.lu/">Google</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/BackNode">Github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <p>Powered by <a href="http://docs.getpelican.com/en/3.6.3/">Pelican</a>. Theme <a href="https://github.com/blueicefield/pelican-blueidea/">blueidea</a>, inspired by the default theme.</p>
+        </footer><!-- /#contentinfo -->
+
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-61296690-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc1e5277b46b034d174091d85f9f8a565' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>
